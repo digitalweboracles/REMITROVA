@@ -19,7 +19,8 @@ nixPkgs = [
 cmds = ["composer install --no-interaction --optimize-autoloader --no-dev"]
 
 [start]
-# [start] uses a SINGLE cmd string (not cmds array) — Nixpacks runs only
-# the first entry of an array under [start]. Chain everything with ";" so
-# each runs regardless of the previous, ending in the foreground server.
-cmd = "php artisan migrate --force || true; php artisan config:cache || true; php artisan route:cache || true; php artisan view:cache || true; php artisan event:cache || true; php artisan storage:link || true; php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"
+# [start] uses a SINGLE cmd string (not cmds array). Chain everything
+# with ";" so each runs regardless of the previous, ending in the
+# foreground server. The first echo writes PORT to the deploy logs so we
+# can confirm Railway is injecting $PORT.
+cmd = "echo REMITROVA_START PORT=${PORT:-UNSET}; php artisan migrate --force || true; php artisan config:cache || true; php artisan route:cache || true; php artisan view:cache || true; php artisan event:cache || true; php artisan storage:link || true; php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"
