@@ -1,0 +1,25 @@
+# Nixpacks config for RemitRova (Laravel) on Railway.
+# Forces a PHP build — prevents any Node/Express misdetection.
+
+[phases.setup]
+nixPkgs = ["php82", "php82Extensions.redis", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "composer", "nodejs"]
+# nodejs is required only if frontend asset building is added later.
+
+[phases.install]
+cmds = ["composer install --no-interaction --optimize-autoloader --no-dev"]
+
+[phases.build]
+cmds = [
+    "php artisan package:discover --ansi",
+    "php artisan config:cache",
+    "php artisan route:cache",
+    "php artisan view:cache",
+    "php artisan event:cache",
+    # Migrate against the Railway-provided MySQL on every build/deploy.
+    "php artisan migrate --force",
+    "php artisan storage:link || true",
+    "chmod -R u+rwX storage bootstrap/cache",
+]
+
+[start]
+cmd = 'php artisan serve --host=0.0.0.0 --port=$PORT'
