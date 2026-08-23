@@ -3,6 +3,7 @@
 namespace App\Services\Payments\Paga;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -88,10 +89,30 @@ class PagaCollectClient
 
     private function post(string $path, array $payload): array
     {
+        $url = rtrim($this->baseUrl, '/') . $path;
+
+        // Log the exact outgoing request, principal included (it's not
+        // secret, it identifies the merchant account) but with the
+        // secret key/password never logged, and the hash itself IS
+        // logged since seeing it lets us manually recompute and compare
+        // if Paga's side disputes what we sent.
+        Log::info('Paga Collect API request', [
+            'url' => $url,
+            'principal' => $this->principal,
+            'payload' => $payload,
+        ]);
+
         $response = Http::withBasicAuth($this->principal, $this->secretKey)
             ->acceptJson()
             ->timeout(20)
-            ->post(rtrim($this->baseUrl, '/') . $path, $payload);
+            ->post($url, $payload);
+
+        Log::info('Paga Collect API response', [
+            'url' => $url,
+            'status' => $response->status(),
+            'headers' => $response->headers(),
+            'body' => $response->body(),
+        ]);
 
         if ($response->failed()) {
             throw new RuntimeException(
