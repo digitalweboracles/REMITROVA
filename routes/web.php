@@ -31,6 +31,7 @@ Route::get('/dev/seed-test-customer', function (Request $request) {
         [
             'name' => 'Test Customer',
             'password' => bcrypt('password123'),
+            'phone' => '08012345678',
             'country' => 'NG',
             'sender_formal_name' => 'Test Customer',
             'sender_gender' => 'M',
@@ -39,6 +40,13 @@ Route::get('/dev/seed-test-customer', function (Request $request) {
             'sender_address' => '1 Test Street, Lagos, Nigeria',
         ]
     );
+
+    // If this customer already existed from before this fix (created
+    // without a phone number), fill it in now rather than requiring a
+    // manual DB edit — Paga's Create Persistent Account expects phoneNumber.
+    if (!$customer->phone) {
+        $customer->update(['phone' => '08012345678']);
+    }
 
     $wallet = $customer->wallets()->firstOrCreate(
         ['currency' => 'NGN'],
