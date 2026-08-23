@@ -15,7 +15,7 @@ return [
         'driver' => 'file',
     ],
 
-    // TEMPORARY — see routes/web.php's /dev/seed-test-customer route.
-    // Remove this along with that route before going anywhere near production.
+    // TEMPORARY — see routes/web.php's /dev/* routes.
+    // Remove this along with those routes before going near production.
     'dev_seed_key' => env('DEV_SEED_KEY'),
 ];

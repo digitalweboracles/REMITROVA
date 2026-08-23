@@ -4,16 +4,9 @@ namespace App\Services\Payments\Paga;
 
 use App\Models\Customer;
 use App\Models\PersistentAccount;
-use App\Models\Wallet;
 use Illuminate\Support\Str;
 use RuntimeException;
 
-/**
- * Orchestrates provisioning a Paga Static NUBAN for a customer's NGN
- * wallet: creates the local pending record first (so we always have a
- * row to reconcile against even if Paga's call fails), calls Paga,
- * then updates the record with the result.
- */
 class ProvisionsPersistentAccounts
 {
     public function __construct(private readonly PagaCollectClient $client)
@@ -33,7 +26,7 @@ class ProvisionsPersistentAccounts
             ->first();
 
         if ($existing) {
-            return $existing; // don't provision a second NUBAN for the same customer
+            return $existing;
         }
 
         $accountReference = (string) Str::uuid();
@@ -60,10 +53,6 @@ class ProvisionsPersistentAccounts
             throw $e;
         }
 
-        // Paga's response field names for the created account number can
-        // vary by their doc revision (accountNumber has been the
-        // confirmed field in samples reviewed) — kept as a single place
-        // to adjust if their response shape changes.
         $accountIdentifier = $response['accountNumber'] ?? $response['accountIdentifier'] ?? null;
 
         if (!$accountIdentifier) {

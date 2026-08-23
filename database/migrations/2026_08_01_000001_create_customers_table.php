@@ -14,15 +14,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone')->nullable();
-            $table->enum('country', ['PL', 'NG']); // home base
+            $table->enum('country', ['PL', 'NG']);
 
-            // IMTO-mandatory sender fields, confirmed required by Paga on
-            // every Deposit To Bank / Money Transfer call for our account
-            // type. Captured once here at KYC/profile time rather than
-            // re-collected per transaction. Nullable at the DB level so a
-            // customer can complete signup before finishing KYC, but the
-            // application layer must enforce these are filled in before
-            // any transfer is allowed to proceed.
             $table->string('sender_formal_name')->nullable();
             $table->enum('sender_gender', ['M', 'F'])->nullable();
             $table->string('sender_occupation')->nullable();

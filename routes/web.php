@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Customer;
+use App\Services\Payments\Paga\ProvisionsPersistentAccounts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -13,18 +14,13 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
-| TEMPORARY dev-only route — sandbox testing convenience
+| TEMPORARY dev-only routes — sandbox testing convenience
 |--------------------------------------------------------------------------
-| Creates (or returns, if it already exists) a single test customer +
-| NGN wallet, so we have something real to provision a sandbox NUBAN
-| against without needing CLI/Tinker access.
-|
-| Protected by a shared-secret query param, NOT real auth — this is
-| fine for sandbox testing but must be DELETED (or the DEV_SEED_KEY
-| rotated to something unguessable and then deleted anyway) before
-| this codebase is ever pointed at production/DigitalOcean. Don't
-| carry this route forward past Phase 1 testing.
+| Both protected by a shared-secret query param, NOT real auth. Fine for
+| sandbox testing, but MUST be deleted (not just have the key rotated)
+| before this codebase is ever pointed at production/DigitalOcean.
 */
+
 Route::get('/dev/seed-test-customer', function (Request $request) {
     if (!config('app.dev_seed_key') || $request->query('key') !== config('app.dev_seed_key')) {
         abort(403, 'Invalid or missing key.');
@@ -53,5 +49,40 @@ Route::get('/dev/seed-test-customer', function (Request $request) {
         'customer_id' => $customer->id,
         'wallet_id' => $wallet->id,
         'email' => $customer->email,
+    ]);
+});
+
+/**
+ * Provisions a real Paga sandbox NUBAN for the given customer_id.
+ * This is the first live call to Paga's Collect API from this app —
+ * the actual test of the hash logic, auth, and endpoint working
+ * end-to-end against their sandbox.
+ */
+Route::get('/dev/provision-nuban/{customerId}', function (Request $request, int $customerId, ProvisionsPersistentAccounts $provisioner) {
+    if (!config('app.dev_seed_key') || $request->query('key') !== config('app.dev_seed_key')) {
+        abort(403, 'Invalid or missing key.');
+    }
+
+    $customer = Customer::findOrFail($customerId);
+
+    try {
+        $account = $provisioner->createForCustomer(
+            $customer,
+            route('webhooks.paga.persistent-account')
+        );
+    } catch (\Throwable $e) {
+        return response()->json([
+            'error' => true,
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+
+    return response()->json([
+        'status' => $account->status,
+        'account_reference' => $account->account_reference,
+        'account_number' => $account->account_identifier,
+        'bank_name' => $account->bank_name,
+        'failure_reason' => $account->failure_reason,
+        'raw_paga_response' => $account->raw_create_response,
     ]);
 });

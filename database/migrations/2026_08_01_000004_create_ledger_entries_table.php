@@ -13,24 +13,17 @@ return new class extends Migration
             $table->foreignId('wallet_id')->constrained()->cascadeOnDelete();
 
             $table->enum('direction', ['credit', 'debit']);
-            $table->decimal('amount', 20, 4); // always positive; direction says which way it moves the balance
+            $table->decimal('amount', 20, 4);
             $table->enum('currency', ['PLN', 'NGN']);
-
             $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'reversed'])->default('pending');
 
-            // Idempotency: this is what stops a retried webhook or a
-            // duplicated queue job from crediting the same deposit twice.
-            // Every code path that creates a ledger entry MUST derive
-            // this key deterministically from the source event (e.g.
-            // "paga_deposit:{transactionReference}") rather than
-            // generating a fresh UUID, or the protection is worthless.
             $table->string('idempotency_key')->unique();
 
-            $table->string('provider')->nullable();            // e.g. "paga"
-            $table->string('provider_reference')->nullable();  // Paga's transactionReference / referenceNumber
-            $table->string('type');                             // e.g. "nuban_deposit", "disbursement", "adjustment"
+            $table->string('provider')->nullable();
+            $table->string('provider_reference')->nullable();
+            $table->string('type');
             $table->text('description')->nullable();
-            $table->json('metadata')->nullable();               // sender name, raw amounts pre-fee, etc.
+            $table->json('metadata')->nullable();
 
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();

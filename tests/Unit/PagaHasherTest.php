@@ -5,15 +5,6 @@ namespace Tests\Unit;
 use App\Services\Payments\Paga\PagaHasher;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Tests for the hash logic specifically — this is the piece where
- * Paga's documentation contradicted itself (§11 vs §12 for callback
- * verification) and where a wrong field list silently produces a hash
- * Paga's server rejects. These tests encode exactly what Paga's
- * support team confirmed, so a future accidental change to
- * PagaHasher/PagaHashFields breaks a test instead of breaking
- * production silently.
- */
 class PagaHasherTest extends TestCase
 {
     public function test_optional_field_is_included_when_present(): void
@@ -31,8 +22,6 @@ class PagaHasherTest extends TestCase
             'callbackUrl' => 'https://example.com/hook',
         ], 'TESTKEY');
 
-        // Confirmed by Paga: omitting an optional field changes the hash
-        // (it's excluded entirely, not padded with an empty value).
         $this->assertNotSame($withoutOptional, $withOptional);
     }
 
@@ -62,7 +51,7 @@ class PagaHasherTest extends TestCase
     {
         $hash = PagaHasher::buildHash(['referenceNumber'], ['referenceNumber' => 'REF1'], 'TESTKEY');
 
-        $this->assertSame(128, strlen($hash)); // SHA-512 hex output is always 128 chars
+        $this->assertSame(128, strlen($hash));
         $this->assertMatchesRegularExpression('/^[a-f0-9]{128}$/', $hash);
     }
 
@@ -75,8 +64,6 @@ class PagaHasherTest extends TestCase
             'amount' => '5,000.00',
         ];
 
-        // Build the hash the same way Paga would, using the exact field
-        // order their x-paga-hash-parameters header would specify.
         $expectedHash = PagaHasher::buildHash(
             ['transactionReference', 'accountNumber', 'amount'],
             $payload,
@@ -103,7 +90,7 @@ class PagaHasherTest extends TestCase
         );
 
         $tamperedPayload = $originalPayload;
-        $tamperedPayload['amount'] = '50000.00'; // attacker inflates the amount after the hash was computed
+        $tamperedPayload['amount'] = '50000.00';
 
         $headers = [
             'x-paga-hash' => $hash,

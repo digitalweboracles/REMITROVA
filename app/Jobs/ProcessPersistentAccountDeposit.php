@@ -14,19 +14,12 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Turns a verified Paga persistent-account deposit webhook into an
- * actual wallet credit. This is the only place money enters a wallet
- * from an incoming NUBAN deposit — keeping that in one job (rather
- * than duplicating the crediting logic anywhere else) means there's
- * exactly one code path to audit for correctness.
- */
 class ProcessPersistentAccountDeposit implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 5;
-    public array $backoff = [10, 30, 60, 300, 900]; // seconds between retries
+    public array $backoff = [10, 30, 60, 300, 900];
 
     public function __construct(public int $webhookEventId)
     {
@@ -42,14 +35,11 @@ class ProcessPersistentAccountDeposit implements ShouldQueue
         }
 
         if ($event->processed_at !== null) {
-            return; // already handled — nothing to do (defensive; shouldn't normally happen)
+            return;
         }
 
         $payload = $event->payload;
 
-        // Paga's sample callback showed amount as a formatted string
-        // with thousands separators (e.g. "200,000.00") rather than a
-        // bare number — strip commas before treating it as a decimal.
         $accountNumber = $payload['accountNumber'] ?? null;
         $rawAmount = $payload['amount'] ?? null;
         $transactionReference = $payload['transactionReference'] ?? $payload['referenceNumber'] ?? null;
@@ -59,7 +49,7 @@ class ProcessPersistentAccountDeposit implements ShouldQueue
                 'processing_error' => 'Missing accountNumber, amount, or transactionReference in payload.',
             ]);
             Log::error('Paga deposit webhook missing required fields', ['payload' => $payload]);
-            return; // don't retry — the payload itself is malformed, retrying won't fix that
+            return;
         }
 
         $amount = str_replace(',', '', (string) $rawAmount);
@@ -79,15 +69,9 @@ class ProcessPersistentAccountDeposit implements ShouldQueue
                 'processing_error' => "No active persistent_account found for account_identifier {$accountNumber}.",
             ]);
             Log::error('Paga deposit webhook referenced an unknown account', ['account_number' => $accountNumber]);
-            return; // don't retry — this won't resolve itself; needs manual investigation
+            return;
         }
 
-        // Deterministic idempotency key derived from Paga's own
-        // transaction reference — NOT a freshly generated UUID. If this
-        // job is ever re-run (queue retry after a crash between the
-        // wallet credit and marking the event processed, for instance),
-        // this key guarantees the ledger entry insert below fails on
-        // the second attempt instead of double-crediting the wallet.
         $idempotencyKey = "paga_deposit:{$transactionReference}";
 
         try {
@@ -112,10 +96,6 @@ class ProcessPersistentAccountDeposit implements ShouldQueue
                 $wallet->creditAtomically($amount);
             });
         } catch (QueryException $e) {
-            // Unique constraint on idempotency_key tripped — this exact
-            // deposit has already been credited. Treat as success, not
-            // an error: the correct financial outcome (credited exactly
-            // once) has already been achieved.
             Log::info('Duplicate deposit processing prevented by idempotency key', [
                 'idempotency_key' => $idempotencyKey,
             ]);
@@ -123,15 +103,10 @@ class ProcessPersistentAccountDeposit implements ShouldQueue
 
         $event->update(['processed_at' => now()]);
 
-        // TODO (Phase 1 follow-up, not yet implemented): trigger the
-        // actual NGN->PLN / PLN->NGN conversion + credit to the
-        // customer's OTHER wallet here, matching the product behavior
-        // already built into the investor demo. That conversion step
-        // needs a live FX rate source and its own ledger entries
-        // (a debit from the receiving wallet, a credit to the spendable
-        // wallet) — deliberately scoped out of this first webhook-handling
-        // pass so this job stays focused on "did the deposit get
-        // recorded correctly," which is the harder correctness problem.
+        // TODO (not yet implemented): trigger the NGN<->PLN conversion +
+        // credit to the customer's OTHER wallet, matching the investor
+        // demo's behavior. Needs a live FX rate source and its own
+        // ledger entries — deliberately scoped out of this webhook pass.
     }
 
     public function failed(\Throwable $exception): void

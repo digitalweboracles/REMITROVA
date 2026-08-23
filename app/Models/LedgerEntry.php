@@ -29,13 +29,6 @@ class LedgerEntry extends Model
         return $this->belongsTo(Wallet::class);
     }
 
-    /**
-     * Ledger entries are append-only by design — once written, a
-     * completed/failed entry should never be edited, only superseded by
-     * a new entry (e.g. a "reversed" direction-flipped entry). This
-     * guard makes accidental mutation of a settled entry fail loudly
-     * instead of silently corrupting the financial record.
-     */
     public function save(array $options = [])
     {
         if ($this->exists && $this->getOriginal('status') === 'completed' && $this->isDirty(['amount', 'direction', 'wallet_id'])) {

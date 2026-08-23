@@ -29,13 +29,6 @@ class Wallet extends Model
         return $this->hasMany(LedgerEntry::class);
     }
 
-    /**
-     * Atomically increments the balance and returns the new value.
-     * Uses a row-level lock + a raw increment (not read-modify-write in
-     * PHP) so two concurrent credits can never race and clobber each
-     * other. Always call this from inside a DB transaction alongside
-     * the LedgerEntry write that justifies the credit.
-     */
     public function creditAtomically(string $amount): void
     {
         DB::table('wallets')
@@ -46,10 +39,6 @@ class Wallet extends Model
         $this->refresh();
     }
 
-    /**
-     * Atomically debits the balance, throwing if it would go negative.
-     * Same locking approach as creditAtomically().
-     */
     public function debitAtomically(string $amount): void
     {
         $locked = DB::table('wallets')->where('id', $this->id)->lockForUpdate()->first();

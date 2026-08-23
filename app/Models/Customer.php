@@ -42,13 +42,6 @@ class Customer extends Authenticatable
         return $this->hasMany(PersistentAccount::class);
     }
 
-    /**
-     * Whether this customer has filled in every field Paga's IMTO
-     * requirements need before we can send them through Deposit To
-     * Bank / Money Transfer. Enforce this at the point of initiating a
-     * transfer, not just at signup, since it's the single source of
-     * truth for "can this customer legally send money right now."
-     */
     public function hasCompletedImtoKyc(): bool
     {
         return filled($this->sender_formal_name)

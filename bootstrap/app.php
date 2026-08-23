@@ -12,10 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Paga's server calls our webhook directly (not a browser with a
-        // session), so it can never carry a CSRF token — exclude it here
-        // or every incoming webhook gets rejected with a 419 before it
-        // reaches PagaPersistentAccountWebhookController.
+        // Paga's server calls our webhook directly, not a browser with a
+        // session, so it can never carry a CSRF token.
         $middleware->validateCsrfTokens(except: [
             'api/webhooks/paga/persistent-account',
         ]);
