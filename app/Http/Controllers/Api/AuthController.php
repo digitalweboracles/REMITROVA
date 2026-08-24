@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -33,18 +34,26 @@ class AuthController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $customer = Customer::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
-            'country' => $request->input('country'),
-        ]);
-
         // NGN wallet only — Static NUBAN (the only receiving rail built
         // so far) attaches to this. A PLN wallet isn't created here
         // since there's no working rail behind it yet; creating one
         // would just be a number with nothing real able to move it.
-        $customer->wallets()->create(['currency' => 'NGN', 'balance' => 0]);
+        //
+        // Wrapped in a transaction so a failure partway through (e.g. a
+        // missing wallets table) can't leave an orphaned customer row —
+        // that would make every retry fail with "email already taken".
+        $customer = DB::transaction(function () use ($request) {
+            $customer = Customer::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => Hash::make($request->input('password')),
+                'country' => $request->input('country'),
+            ]);
+
+            $customer->wallets()->create(['currency' => 'NGN', 'balance' => 0]);
+
+            return $customer;
+        });
 
         $token = $customer->createToken('demo-frontend')->plainTextToken;
 

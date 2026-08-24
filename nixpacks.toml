@@ -19,8 +19,11 @@ nixPkgs = [
 cmds = ["composer install --no-interaction --optimize-autoloader --no-dev"]
 
 [start]
-# Minimal, bulletproof start. Migrate runs first (tolerates failure).
+# Migrate first, and do NOT tolerate failure: if migrations fail the
+# container must die (&&) so the deploy is visibly broken instead of
+# the app booting with a missing schema and serving 500s on every
+# request that touches the missing tables.
 # Then serve on $PORT in the FOREGROUND — this is what keeps the
 # container alive. No config/route/view caching: those can fail on
 # closure-based routes (web.php uses a closure) and crash the boot.
-cmd = "php artisan migrate --force; php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"
+cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"
