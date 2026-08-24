@@ -166,9 +166,13 @@ const I18N = {
     landing_hero_sub: 'One account, two countries. A real Nigerian NUBAN today, with Poland-side transfers on the way \u2014 built to make sending money home feel like sending a message.',
     landing_cta_primary: 'Get Started',
     landing_cta_secondary: 'I already have an account',
-    landing_flow_ng_label: 'Sent from Nigeria',
-    landing_flow_pl_label: 'Ready to spend in Poland',
     landing_flow_note: 'Here\u2019s the idea we\u2019re building toward \u2014 money sent in one country becoming spendable in the other, automatically. Right now, real NUBAN deposits into your Nigeria wallet are live; the Poland side is coming next.',
+
+    landing_stories_kicker: 'Real people, real transfers',
+    landing_stories_title: 'This is who RemitRova is for',
+    landing_story1_caption: 'A family in Lagos, celebrating money that just landed.',
+    landing_story2_caption: 'Sending money home from an apartment in Warsaw.',
+    landing_story3_caption: 'Cross-border business, made as simple as a notification.',
 
     landing_features_kicker: 'Why RemitRova',
     landing_features_title: 'Built like a real bank, not a wire-transfer form',
@@ -356,9 +360,13 @@ const I18N = {
     landing_hero_sub: 'Jedno konto, dwa kraje. Prawdziwy nigeryjski NUBAN ju\u017c dzi\u015b, a przelewy po stronie polskiej w drodze \u2014 tworzone, by wysy\u0142anie pieni\u0119dzy do domu by\u0142o proste jak wiadomo\u015b\u0107.',
     landing_cta_primary: 'Zacznij',
     landing_cta_secondary: 'Mam ju\u017c konto',
-    landing_flow_ng_label: 'Wys\u0142ane z Nigerii',
-    landing_flow_pl_label: 'Gotowe do wydania w Polsce',
     landing_flow_note: 'Oto wizja, kt\u00f3r\u0105 realizujemy \u2014 pieni\u0105dze wys\u0142ane w jednym kraju staj\u0105 si\u0119 automatycznie dost\u0119pne w drugim. Obecnie dzia\u0142aj\u0105 prawdziwe wp\u0142aty NUBAN na Tw\u00f3j portfel nigeryjski; strona polska jest w przygotowaniu.',
+
+    landing_stories_kicker: 'Prawdziwi ludzie, prawdziwe przelewy',
+    landing_stories_title: 'Dla nich powsta\u0142a RemitRova',
+    landing_story1_caption: 'Rodzina w Lagos, \u015bwi\u0119tuj\u0105ca pieni\u0105dze, kt\u00f3re w\u0142a\u015bnie dotar\u0142y.',
+    landing_story2_caption: 'Wysy\u0142anie pieni\u0119dzy do domu z mieszkania w Warszawie.',
+    landing_story3_caption: 'Mi\u0119dzynarodowy biznes, prosty jak powiadomienie.',
 
     landing_features_kicker: 'Dlaczego RemitRova',
     landing_features_title: 'Zbudowane jak prawdziwy bank, nie formularz przelewu',
