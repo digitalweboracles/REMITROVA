@@ -29,7 +29,11 @@ class ProvisionsPersistentAccounts
             return $existing;
         }
 
-        $accountReference = (string) Str::uuid();
+        // Paga requires accountReference to be 11-30 characters (confirmed
+        // by their support team — this was previously a full UUID, at 36
+        // characters, silently over their limit and the actual root cause
+        // of every prior "system error" response from their sandbox).
+        $accountReference = 'RR' . strtoupper(Str::random(14));
 
         $record = PersistentAccount::create([
             'customer_id' => $customer->id,
