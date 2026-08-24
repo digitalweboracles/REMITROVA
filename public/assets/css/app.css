@@ -91,6 +91,7 @@ input,select{font-family:inherit;}
 /* wallet cards */
 .wallets-row{display:flex; gap:14px; overflow-x:auto; padding:2px 20px 8px; scroll-snap-type:x mandatory; margin:0 -20px 24px;}
 .wallets-row::-webkit-scrollbar{display:none;}
+.wallet-spacer{flex:0 0 0; width:0; scroll-snap-align:start;}
 .wallet-card{
   scroll-snap-align:start; flex:0 0 85%; border-radius:26px; padding:24px 24px 22px; position:relative; overflow:hidden;
   color:#fff; min-height:160px; display:flex; flex-direction:column; justify-content:space-between;
@@ -173,7 +174,17 @@ input,select{font-family:inherit;}
 .filter-tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
 
 @media (min-width:769px){
-  body{background:linear-gradient(180deg,#EDEBE4,#DCD9CF);}
+  body{
+    background:
+      radial-gradient(circle at 6% 8%, rgba(0,129,77,0.16) 0%, transparent 34%),
+      radial-gradient(circle at 4% 68%, rgba(214,40,57,0.10) 0%, transparent 30%),
+      radial-gradient(circle at 96% 22%, rgba(214,40,57,0.15) 0%, transparent 34%),
+      radial-gradient(circle at 94% 82%, rgba(0,129,77,0.12) 0%, transparent 32%),
+      radial-gradient(circle, rgba(16,19,18,0.055) 1px, transparent 1.4px),
+      linear-gradient(180deg,#EDEBE4,#DCD9CF);
+    background-size:auto, auto, auto, auto, 26px 26px, auto;
+    background-attachment:fixed;
+  }
   #screen-app.active{max-width:480px; margin:0 auto; box-shadow:0 0 60px rgba(0,0,0,0.10); min-height:100vh;}
   /* .app-header is position:sticky, so it's already correctly sized
      and positioned as a normal child of the centered #screen-app.active
@@ -182,6 +193,14 @@ input,select{font-family:inherit;}
      it escapes normal document flow and must be explicitly centered. */
   .bottom-nav{left:50%; right:auto; width:480px; transform:translateX(-50%);}
   .sheet, .sheet-backdrop{left:50%; right:auto; width:480px; transform:translateX(-50%) translateY(0);}
+  /* .wallets-row's negative-margin edge-to-edge bleed is correct on
+     mobile (the app spans the full device width, so there's no visible
+     "container edge" to poke past). On desktop, #screen-app.active is
+     now a boxed, box-shadowed column — the same negative margins make
+     the wallet cards visibly spill outside that box and misalign
+     against everything else on the page. Contain it properly here. */
+  .wallets-row{margin:0 0 24px; padding:2px 4px 8px 0;}
+  .wallet-spacer{flex:0 0 6px; width:6px;}
   .sheet{transform:translateX(-50%) translateY(100%);}
   .sheet.open{transform:translateX(-50%) translateY(0);}
 }

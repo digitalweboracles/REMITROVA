@@ -102,20 +102,133 @@ function comingSoon() {
 }
 
 /* ---------------- landing <-> auth navigation ---------------- */
-function goToAuth(mode) {
+/* =========================================================
+   ROUTING — real URLs, so the browser back/forward buttons and
+   direct links actually work, instead of everything living on one
+   URL with JS-only screen switching.
+
+   URL scheme:
+     /                    landing (or auto-redirects to /dashboard if already logged in)
+     /login               auth screen, login mode
+     /signup              auth screen, signup mode
+     /dashboard           app home
+     /dashboard/history   history page
+     /dashboard/profile   profile page
+
+   renderForPath() is the single source of truth for "given this URL
+   and the current auth state, what should be on screen" — it's used
+   for the initial page load, for browser back/forward (popstate),
+   and after login/logout/navigation, so there's exactly one place
+   that logic lives rather than it being duplicated per call site.
+   ========================================================= */
+const DASHBOARD_PAGE_FOR_PATH = {
+  '/dashboard': 'page-home',
+  '/dashboard/history': 'page-history',
+  '/dashboard/profile': 'page-profile',
+};
+const PATH_FOR_DASHBOARD_PAGE = {
+  'page-home': '/dashboard',
+  'page-history': '/dashboard/history',
+  'page-profile': '/dashboard/profile',
+};
+
+function navigateTo(path, { replace = false } = {}) {
+  if (replace) {
+    history.replaceState({ path }, '', path);
+  } else {
+    history.pushState({ path }, '', path);
+  }
+  renderForPath(path);
+}
+
+function renderForPath(path, fromPopstate = false) {
+  const isLoggedIn = !!(auth.token && auth.customer);
   const landing = document.getElementById('screen-landing');
-  if (landing) landing.classList.remove('active');
-  document.getElementById('screen-auth').classList.add('active');
-  setAuthMode(mode);
+
+  if (path.startsWith('/dashboard')) {
+    if (!isLoggedIn) {
+      // This redirect is a correctness/security necessity — there is
+      // no dashboard to show a logged-out visitor — so it's always
+      // applied, even during popstate.
+      navigateTo('/login', { replace: true });
+      return;
+    }
+    showScreen('screen-app');
+    const pageId = DASHBOARD_PAGE_FOR_PATH[path] || 'page-home';
+    showDashboardPage(pageId);
+    return;
+  }
+
+  if (path === '/login' || path === '/signup') {
+    if (isLoggedIn) {
+      // Bouncing an already-logged-in visitor away from /login is the
+      // right call for a direct click or a typed URL. But calling
+      // history.replaceState() from INSIDE the popstate handler (i.e.
+      // while the browser is mid-way through a back/forward traversal)
+      // corrupts that traversal — the entry being replaced is the very
+      // one the user just navigated to, which silently eats history
+      // entries and makes back/forward get "stuck". So during
+      // popstate specifically, just show the dashboard's content
+      // directly without touching the URL — a minor cosmetic
+      // difference (URL briefly says /login while dashboard shows),
+      // not a correctness issue, and it keeps back/forward reliable.
+      if (fromPopstate) {
+        showScreen('screen-app');
+        showDashboardPage('page-home');
+        return;
+      }
+      navigateTo('/dashboard', { replace: true });
+      return;
+    }
+    showScreen('screen-auth');
+    setAuthMode(path === '/signup' ? 'signup' : 'login');
+    return;
+  }
+
+  // "/" or anything unrecognized
+  if (isLoggedIn) {
+    if (fromPopstate) {
+      showScreen('screen-app');
+      showDashboardPage('page-home');
+      return;
+    }
+    navigateTo('/dashboard', { replace: true });
+    return;
+  }
+  showScreen(landing ? 'screen-landing' : 'screen-auth');
+  if (!landing) setAuthMode('login');
+}
+
+/** Low-level: shows exactly one top-level screen (landing/auth/app), hides the others. */
+function showScreen(screenId) {
+  ['screen-landing', 'screen-auth', 'screen-app'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', id === screenId);
+  });
   window.scrollTo(0, 0);
 }
-function goToLanding() {
-  const landing = document.getElementById('screen-landing');
-  if (!landing) return; // this build has no landing page — nothing to go back to
-  document.getElementById('screen-auth').classList.remove('active');
-  document.getElementById('screen-app').classList.remove('active');
-  landing.classList.add('active');
+
+/** Low-level: shows exactly one dashboard sub-page, and renders its data. */
+function showDashboardPage(pageId) {
+  document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  document.querySelectorAll('.nav-item[data-page]').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === pageId);
+  });
+  if (pageId === 'page-history') renderHistory();
+  if (pageId === 'page-profile') renderProfile();
   window.scrollTo(0, 0);
+}
+
+window.addEventListener('popstate', () => {
+  renderForPath(window.location.pathname, true);
+});
+
+function goToAuth(mode) {
+  navigateTo(mode === 'signup' ? '/signup' : '/login');
+}
+function goToLanding() {
+  navigateTo('/');
 }
 
 /* ---------------- auth ---------------- */
@@ -138,7 +251,7 @@ function refreshAuthModeText() {
   const linkKey = mode === 'signup' ? 'link_login' : 'link_create_account';
   const nextMode = mode === 'signup' ? 'login' : 'signup';
   document.getElementById('authFoot').innerHTML =
-    `<span>${t(footKey)}</span> <a href="#" onclick="setAuthMode('${nextMode}'); return false;" style="font-weight:700;text-decoration:underline;">${t(linkKey)}</a>`;
+    `<span>${t(footKey)}</span> <a href="#" onclick="goToAuth('${nextMode}'); return false;" style="font-weight:700;text-decoration:underline;">${t(linkKey)}</a>`;
 }
 
 async function handleAuthSubmit(e) {
@@ -196,11 +309,8 @@ async function handleAuthSubmit(e) {
 }
 
 function enterApp() {
-  const landing = document.getElementById('screen-landing');
-  if (landing) landing.classList.remove('active');
-  document.getElementById('screen-auth').classList.remove('active');
-  document.getElementById('screen-app').classList.add('active');
   renderAll();
+  navigateTo('/dashboard');
 }
 
 async function logout() {
@@ -212,24 +322,13 @@ async function logout() {
     // fallback for a failed logout request.
   }
   clearAuth();
-  document.getElementById('screen-app').classList.remove('active');
-  const landing = document.getElementById('screen-landing');
-  if (landing) landing.classList.remove('active');
-  document.getElementById('screen-auth').classList.add('active');
-  setAuthMode('login');
   document.getElementById('authForm').reset();
+  navigateTo('/login');
 }
 
 /* ---------------- navigation ---------------- */
 function goto(pageId) {
-  document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-  document.querySelectorAll('.nav-item[data-page]').forEach(b => {
-    b.classList.toggle('active', b.dataset.page === pageId);
-  });
-  if (pageId === 'page-history') renderHistory();
-  if (pageId === 'page-profile') renderProfile();
-  window.scrollTo(0, 0);
+  navigateTo(PATH_FOR_DASHBOARD_PAGE[pageId] || '/dashboard');
 }
 
 /* ---------------- render: dashboard ---------------- */
@@ -245,6 +344,7 @@ function renderWallets() {
   const c = auth.customer;
   const row = document.getElementById('walletsRow');
   row.innerHTML = `
+    <div class="wallet-spacer" aria-hidden="true"></div>
     <div class="wallet-card ngn">
       <div class="wallet-top"><span>🇳🇬 ${t('nigeria_wallet')}</span><span class="wallet-flag">NGN</span></div>
       <div class="wallet-balance"><small>₦</small>${fmt(c.ngn_balance || 0)}</div>
@@ -356,11 +456,17 @@ async function provisionNuban() {
 
   auth = loadAuth() || { token: null, customer: null };
 
+  // Render whatever the CURRENT URL says should be shown (respects a
+  // direct link to /dashboard/profile, a reload while on /login, etc.)
+  // rather than always forcing the same starting screen regardless of
+  // what's actually in the address bar.
+  renderForPath(window.location.pathname);
+
   if (auth.token && auth.customer) {
-    // Trust the cached customer for instant paint, then quietly refresh
-    // from the real /me endpoint in case the balance/NUBAN changed
-    // since last visit (e.g. Paga's webhook credited a deposit).
-    enterApp();
+    // Trust the cached customer for the instant paint above, then
+    // quietly refresh from the real /me endpoint in case the balance
+    // or NUBAN changed since last visit (e.g. Paga's webhook credited
+    // a deposit while the user was away).
     apiFetch('/api/auth/me').then(customer => {
       auth.customer = customer;
       saveAuth();
@@ -368,11 +474,7 @@ async function provisionNuban() {
     }).catch(() => {
       // Token likely expired/revoked — send back to a clean login.
       clearAuth();
-      document.getElementById('screen-app').classList.remove('active');
-      document.getElementById('screen-auth').classList.add('active');
-      setAuthMode('login');
+      navigateTo('/login', { replace: true });
     });
-  } else {
-    setAuthMode('login');
   }
 })();

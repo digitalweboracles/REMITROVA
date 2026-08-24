@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Route;
  * check — that's now at /up instead (Laravel's built-in health route,
  * configured in bootstrap/app.php), freeing up "/" for the real app.
  */
-Route::get('/', function () {
+$serveFrontend = function () {
     return response()
         ->file(resource_path('frontend/index.html'), ['Content-Type' => 'text/html']);
-});
+};
+
+Route::get('/', $serveFrontend);
 
 /*
 |--------------------------------------------------------------------------
@@ -97,3 +99,13 @@ Route::get('/dev/provision-nuban/{customerId}', function (Request $request, int 
         'raw_paga_response' => $account->raw_create_response,
     ]);
 });
+
+/**
+ * Catch-all: the frontend is a client-side-routed SPA (real URLs like
+ * /dashboard, /login, /dashboard/history exist for the browser's
+ * address bar and back/forward buttons, but there's no server-side
+ * page for each one). Anything not matched by a route above — MUST
+ * stay last in this file — gets the same app shell; the frontend JS
+ * reads window.location.pathname on load and shows the right screen.
+ */
+Route::get('/{any}', $serveFrontend)->where('any', '^(?!api|dev|up).*$');
