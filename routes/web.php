@@ -5,11 +5,14 @@ use App\Services\Payments\Paga\ProvisionsPersistentAccounts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * Serves the frontend app shell. This used to return a JSON health
+ * check — that's now at /up instead (Laravel's built-in health route,
+ * configured in bootstrap/app.php), freeing up "/" for the real app.
+ */
 Route::get('/', function () {
-    return response()->json([
-        'app' => 'RemitRova backend',
-        'status' => 'ok',
-    ]);
+    return response()
+        ->file(resource_path('frontend/index.html'), ['Content-Type' => 'text/html']);
 });
 
 /*

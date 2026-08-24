@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>RemitRova — Poland ⇄ Nigeria, instantly</title>
+<meta name="description" content="Send and receive money between Poland and Nigeria in seconds.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RemitRova — Poland ⇄ Nigeria, instantly">
+<meta property="og:description" content="Send and receive money between Poland and Nigeria in seconds.">
+<link rel="icon" href="/assets/img/logo.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/app.css">
+</head>
+<body>
+
+<!-- ============ AUTH SCREEN ============ -->
+<section class="screen active" id="screen-auth">
+  <div class="wrap">
+    <div class="auth-card">
+      <div class="auth-head">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
+          <div class="lang-switch" id="langSwitchAuth">
+            <button type="button" class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+            <button type="button" class="lang-btn" data-lang="pl" onclick="setLang('pl')">PL</button>
+          </div>
+        </div>
+        <div class="brandmark" style="justify-content:center; margin-bottom:16px;"><img src="/assets/img/logo.png" alt="RemitRova" class="brand-logo">RemitRova</div>
+        <h1 id="authTitle" data-i18n="login_title">Welcome back</h1>
+        <p id="authSub" data-i18n="login_sub">Log in to send or receive money.</p>
+      </div>
+
+      <div class="auth-toggle">
+        <button type="button" id="tabLogin" class="active" data-i18n="tab_login" onclick="setAuthMode('login')">Log In</button>
+        <button type="button" id="tabSignup" data-i18n="tab_signup" onclick="setAuthMode('signup')">Create Account</button>
+      </div>
+
+      <form id="authForm" onsubmit="return handleAuthSubmit(event)">
+        <div class="field" id="fieldName" style="display:none;">
+          <label for="authName" data-i18n="label_fullname">Full name</label>
+          <input type="text" id="authName" data-i18n-placeholder="ph_fullname" placeholder="Ada Okafor" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="authEmail" data-i18n="label_email">Email</label>
+          <input type="email" id="authEmail" data-i18n-placeholder="ph_email" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="authPassword" data-i18n="label_password">Password</label>
+          <input type="password" id="authPassword" data-i18n-placeholder="ph_password" placeholder="At least 6 characters" autocomplete="current-password" required minlength="6">
+        </div>
+        <div class="field" id="fieldCountry" style="display:none;">
+          <label for="authCountry" data-i18n="label_homebase">Where are you based?</label>
+          <select id="authCountry">
+            <option value="PL" data-i18n="opt_poland">🇵🇱 Poland</option>
+            <option value="NG" data-i18n="opt_nigeria">🇳🇬 Nigeria</option>
+          </select>
+        </div>
+        <div class="error-text" id="authError"></div>
+        <button type="submit" class="btn btn-primary" id="authSubmitBtn" data-i18n="btn_login" style="margin-top:8px;">Log In</button>
+      </form>
+
+      <div class="auth-foot" id="authFoot">
+        <span data-i18n="foot_new_here">New here?</span>
+        <a href="#" onclick="setAuthMode('signup'); return false;" style="font-weight:800; text-decoration:underline;" data-i18n="link_create_account">Create an account</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APP SHELL ============ -->
+<section class="screen" id="screen-app">
+
+  <header class="app-header">
+    <div class="app-header-inner">
+      <div class="who">
+        <div class="avatar" id="headerAvatar">A</div>
+        <div>
+          <div class="who-name" id="headerName">—</div>
+          <div class="who-sub" data-i18n="verified_account">Verified account</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="lang-switch" id="langSwitchApp">
+          <button type="button" class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+          <button type="button" class="lang-btn" data-lang="pl" onclick="setLang('pl')">PL</button>
+        </div>
+        <button class="icon-btn" onclick="goto('page-profile')" aria-label="Profile">⚙️</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- ---------- DASHBOARD PAGE ---------- -->
+    <div class="app-page active" id="page-home">
+      <div class="wallets-row" id="walletsRow"></div>
+
+      <div class="section-h" style="margin-top:6px;">
+        <h2 data-i18n="quick_actions">Quick actions</h2>
+      </div>
+      <div class="quick-actions">
+        <button class="qa-btn" onclick="comingSoon()">
+          <div class="qa-icon">↗️</div><div class="qa-label" data-i18n="qa_send">Send</div>
+        </button>
+        <button class="qa-btn" onclick="openReceiveSheet()">
+          <div class="qa-icon">🇳🇬</div><div class="qa-label" data-i18n="qa_get_nuban">Get NUBAN</div>
+        </button>
+        <button class="qa-btn" onclick="comingSoon()">
+          <div class="qa-icon">🇵🇱</div><div class="qa-label" data-i18n="qa_get_iban">Get IBAN</div>
+        </button>
+        <button class="qa-btn" onclick="goto('page-history')">
+          <div class="qa-icon">🧾</div><div class="qa-label" data-i18n="qa_history">History</div>
+        </button>
+      </div>
+
+      <div class="section-h">
+        <h2 data-i18n="recent_activity">Recent activity</h2>
+        <a href="#" onclick="goto('page-history'); return false;" data-i18n="see_all">See all</a>
+      </div>
+      <div class="tx-list" id="txListHome"></div>
+    </div>
+
+    <!-- ---------- HISTORY PAGE ---------- -->
+    <div class="app-page" id="page-history">
+      <div class="section-h" style="margin-top:4px;"><h2 style="font-family:var(--font-display); font-size:21px;" data-i18n="history_title">Transaction history</h2></div>
+      <div class="filter-tabs" id="historyFilters">
+        <button class="filter-tab active" data-filter="all" data-i18n="filter_all" onclick="setHistoryFilter('all')">All</button>
+        <button class="filter-tab" data-filter="in" data-i18n="filter_received" onclick="setHistoryFilter('in')">Received</button>
+        <button class="filter-tab" data-filter="out" data-i18n="filter_sent" onclick="setHistoryFilter('out')">Sent</button>
+        <button class="filter-tab" data-filter="pending" data-i18n="filter_pending" onclick="setHistoryFilter('pending')">Pending</button>
+      </div>
+      <div class="tx-list" id="txListFull" style="margin:0 20px;"></div>
+    </div>
+
+    <!-- ---------- PROFILE PAGE ---------- -->
+    <div class="app-page" id="page-profile">
+      <div class="section-h" style="margin-top:4px;"><h2 style="font-family:var(--font-display); font-size:21px;" data-i18n="profile_title">Profile</h2></div>
+      <div class="profile-block">
+        <div class="profile-card">
+          <div class="profile-avatar" id="profileAvatar">A</div>
+          <div class="profile-name" id="profileName">—</div>
+          <div class="profile-email" id="profileEmail">—</div>
+        </div>
+
+        <div class="info-list">
+          <div class="info-row"><span class="lbl" data-i18n="profile_nuban_label">🇳🇬 NUBAN (NGN wallet)</span><span class="val" id="profileNuban">—</span></div>
+          <div class="info-row"><span class="lbl" data-i18n="profile_homebase_label">Home base</span><span class="val" id="profileCountry">—</span></div>
+        </div>
+
+        <button class="btn-danger-text" style="width:100%;" onclick="logout()" data-i18n="logout_btn">Log out</button>
+      </div>
+    </div>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="nav-item active" data-page="page-home" onclick="goto('page-home')"><span class="nav-ic">🏠</span><span data-i18n="nav_home">Home</span></button>
+      <button class="nav-item" data-page="page-home" onclick="comingSoon()"><span class="nav-ic">↗️</span><span data-i18n="nav_send">Send</span></button>
+      <button class="nav-item" data-page="page-history" onclick="goto('page-history')"><span class="nav-ic">🧾</span><span data-i18n="nav_history">History</span></button>
+      <button class="nav-item" data-page="page-profile" onclick="goto('page-profile')"><span class="nav-ic">👤</span><span data-i18n="nav_profile">Profile</span></button>
+    </div>
+  </nav>
+</section>
+
+<!-- ============ RECEIVE / NUBAN SHEET ============ -->
+<div class="sheet-backdrop" id="receiveBackdrop" onclick="closeReceiveSheet()"></div>
+<div class="sheet" id="receiveSheet" role="dialog" aria-modal="true" aria-label="Receive money">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2 id="receiveSheetTitle">Get your account details</h2>
+    <button class="sheet-close" onclick="closeReceiveSheet()" aria-label="Close">✕</button>
+  </div>
+  <div class="sheet-body">
+    <p class="hint-text" id="receiveSheetHint" style="margin-bottom:18px;"></p>
+
+    <div class="nuban-card">
+      <div style="font-size:12px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.04em; font-weight:800;" id="receiveAccountLabel">Account number</div>
+      <div class="nuban-num" id="receiveAccountNumber">—</div>
+      <div class="nuban-bank" id="receiveBankName">—</div>
+      <button class="btn btn-ghost copy-btn" id="copyAccountBtn" onclick="copyAccountNumber()" data-i18n="copy_number_btn" style="display:none;">Copy number</button>
+    </div>
+
+    <div class="provision-box">
+      <div class="error-text" id="nubanError"></div>
+      <button class="btn btn-primary" id="provisionNubanBtn" onclick="provisionNuban()">Get my NUBAN</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="/assets/js/i18n.js"></script>
+<script src="/assets/js/app.js"></script>
+</body>
+</html>

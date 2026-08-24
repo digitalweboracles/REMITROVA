@@ -1,0 +1,335 @@
+/* =========================================================
+   RemitRova Demo — i18n dictionary (English + Polish).
+   Every user-facing string in the app should come from here
+   via t('key') or the tt() template helper, so the whole
+   experience can switch language instantly.
+   ========================================================= */
+
+const I18N = {
+  en: {
+    // Auth
+    login_title: 'Welcome back',
+    login_sub: 'Log in to send or receive money.',
+    signup_title: 'Create your account',
+    signup_sub: 'Set up your Poland ⇄ Nigeria wallet in seconds.',
+    tab_login: 'Log In',
+    tab_signup: 'Create Account',
+    label_fullname: 'Full name',
+    ph_fullname: 'Ada Okafor',
+    label_email: 'Email',
+    ph_email: 'you@example.com',
+    label_password: 'Password',
+    ph_password: 'At least 6 characters',
+    label_homebase: 'Where are you based?',
+    label_startwith: 'Start funding which wallet?',
+    startwith_hint: 'Pick whichever currency you\u2019d like your account pre-loaded with for this demo \u2014 independent of where you\u2019re based.',
+    opt_poland: '\ud83c\uddf5\ud83c\uddf1 Poland',
+    opt_nigeria: '\ud83c\uddf3\ud83c\uddec Nigeria',
+    opt_fund_pln: '\ud83c\uddf5\ud83c\uddf1 Start with PLN funded',
+    opt_fund_ngn: '\ud83c\uddf3\ud83c\uddec Start with NGN funded',
+    btn_login: 'Log In',
+    btn_signup: 'Create Account',
+    auth_error_generic: 'Enter a valid email and a password of at least 6 characters.',
+    foot_new_here: 'New here?',
+    foot_have_account: 'Already have an account?',
+    link_create_account: 'Create an account',
+    link_login: 'Log in',
+    demo_note: '\ud83d\udca1 This is a live interactive demo \u2014 enter any email/password to explore. Data resets when you reload.',
+    toast_account_created: 'Account created \u2014 welcome to RemitRova!',
+    toast_welcome_back: 'Welcome back',
+    toast_local_login: 'Logged in (demo mode uses your local account).',
+    toast_no_account_found: 'No existing demo account found \u2014 created one for you.',
+
+    // Header / nav
+    verified_account: 'Verified account',
+    nav_home: 'Home',
+    nav_send: 'Send',
+    nav_history: 'History',
+    nav_profile: 'Profile',
+
+    // Dashboard
+    poland_wallet: 'Poland wallet',
+    nigeria_wallet: 'Nigeria wallet',
+    quick_actions: 'Quick actions',
+    qa_send: 'Send',
+    qa_get_nuban: 'Get NUBAN',
+    qa_get_iban: 'Get IBAN',
+    qa_history: 'History',
+    recent_activity: 'Recent activity',
+    see_all: 'See all',
+    empty_activity: 'No activity yet \u2014 send or receive your first transfer.',
+
+    // Send flow
+    send_money_title: 'Send money',
+    you_send: 'You send',
+    balance_label: 'Balance',
+    they_receive: 'They receive',
+    fee_label: 'Fee',
+    total_to_pay: 'Total to pay',
+    continue_btn: 'Continue',
+    who_receiving: 'Who\u2019s receiving this transfer?',
+    recipient_name_label: 'Recipient name',
+    ph_recipient_name: 'Full name',
+    account_number_label: 'Account number',
+    ph_account_number: '10 digits',
+    review_transfer_btn: 'Review transfer',
+    back_btn: 'Back',
+    confirm_send_btn: 'Confirm & send',
+    processing_1: 'Routing to a licensed payment partner\u2026',
+    processing_2: 'Verifying recipient account\u2026',
+    processing_3: 'Confirming funds\u2026',
+    transfer_sent_title: 'Transfer sent',
+    done_btn: 'Done',
+    err_amount_zero: 'Enter an amount greater than zero.',
+    err_insufficient: 'Insufficient balance for this amount plus fees.',
+    err_pick_recipient: 'Pick a saved recipient or enter a new one.',
+    review_recipient: 'Recipient',
+    review_account: 'Account',
+    review_you_send: 'You send',
+    review_fee: 'Fee (1.2%)',
+    review_rate: 'Exchange rate',
+    review_they_receive: 'They receive',
+    review_total: 'Total debited',
+    bank_transfer: 'Bank transfer',
+
+    // Receive flow
+    receive_title_ngn: 'Your Nigerian NUBAN',
+    receive_title_pln: 'Your Polish IBAN',
+    receive_hint_ngn: 'Share this account number so people in Nigeria can send you Naira \u2014 it lands directly in your NGN wallet.',
+    receive_hint_pln: 'Share this IBAN so people in Poland can send you Z\u0142oty \u2014 it lands in your PLN wallet instantly, then converts automatically to spendable Naira in your Nigeria wallet.',
+    nuban_label: 'NUBAN (virtual account)',
+    iban_label: 'IBAN',
+    bank_powered_by: 'RemitRova \u00b7 Powered by licensed partner bank',
+    copy_number_btn: 'Copy number',
+    toast_copied: 'Account number copied',
+    please_wait: 'Please wait…',
+    toast_coming_soon: 'This feature isn\u2019t live yet \u2014 coming soon.',
+    nuban_not_provisioned: 'Not yet provisioned',
+    coming_soon_label: 'Coming soon',
+    history_coming_soon: 'Transaction history isn\u2019t available yet \u2014 coming soon.',
+    get_my_nuban_btn: 'Get my NUBAN',
+    toast_nuban_ready: 'Your NUBAN is ready.',
+    sim_deposit_intro: 'Demo tool: simulate someone sending money to this account, to see the receiving leg complete end-to-end.',
+    label_amount_they_send: 'Amount they send',
+    label_sender_from: 'From (sender name)',
+    ph_sender_name: 'e.g. Chidi Okafor',
+    simulate_deposit_btn: 'Simulate incoming deposit',
+    toast_deposit_received: 'Deposit received \u2014 converting\u2026',
+
+    // History
+    history_title: 'Transaction history',
+    filter_all: 'All',
+    filter_received: 'Received',
+    filter_sent: 'Sent',
+    filter_pending: 'Pending',
+    empty_history: 'Nothing here yet.',
+    status_processing: 'Processing',
+
+    // Profile
+    profile_title: 'Profile',
+    profile_iban_label: '\ud83c\uddf5\ud83c\uddf1 IBAN (PLN wallet)',
+    profile_nuban_label: '\ud83c\uddf3\ud83c\uddec NUBAN (NGN wallet)',
+    profile_homebase_label: 'Home base',
+    profile_kyc_label: 'KYC status',
+    profile_kyc_value: '\u2713 Verified (demo)',
+    profile_provider_label: 'Provider (this build)',
+    profile_provider_value: 'Simulated',
+    profile_rate_label: 'Live rate source',
+    profile_rate_value: 'Static demo rate',
+    reset_demo_btn: 'Reset demo data',
+    logout_btn: 'Log out',
+    reset_confirm: 'This clears your simulated balances and history. Continue?',
+
+    // Transactions (templates)
+    tx_welcome_bonus: 'Welcome bonus',
+    tx_sent_to: name => `Sent to ${name}`,
+    tx_incoming_from: name => `Incoming from ${name}`,
+    tx_converted_from: name => `Converted from ${name}\u2019s ${'{CUR}'} transfer`,
+    tx_now_spendable: cur => `Now spendable in your ${cur === 'NGN' ? 'Nigeria' : 'Poland'} wallet`,
+    tx_converting_to: cur => `converting to ${cur}\u2026`,
+    tx_converted_to: (cur, amt) => `converted to ${cur} ${amt}`,
+    nip_transfer: 'NIP transfer',
+    sepa_transfer: 'SEPA transfer',
+
+    success_text: (name, sym, amt, curLabel) => `${name} will receive ${sym}${amt} in their ${curLabel}.`,
+    into_ng_bank: 'Nigerian bank account',
+    into_pl_iban: 'Polish IBAN',
+    toast_wallet_credited: (sym, amt, cur) => `${sym}${amt} added to your ${cur} wallet`,
+
+    country_home_pl: '\ud83c\uddf5\ud83c\uddf1 Poland',
+    country_home_ng: '\ud83c\uddf3\ud83c\uddec Nigeria',
+  },
+
+  pl: {
+    // Auth
+    login_title: 'Witaj ponownie',
+    login_sub: 'Zaloguj si\u0119, aby wys\u0142a\u0107 lub odebra\u0107 pieni\u0105dze.',
+    signup_title: 'Za\u0142\u00f3\u017c konto',
+    signup_sub: 'Skonfiguruj sw\u00f3j portfel Polska \u21c4 Nigeria w kilka sekund.',
+    tab_login: 'Zaloguj si\u0119',
+    tab_signup: 'Za\u0142\u00f3\u017c konto',
+    label_fullname: 'Imi\u0119 i nazwisko',
+    ph_fullname: 'Ada Okafor',
+    label_email: 'Email',
+    ph_email: 'ty@przyklad.com',
+    label_password: 'Has\u0142o',
+    ph_password: 'Minimum 6 znak\u00f3w',
+    label_homebase: 'Gdzie mieszkasz?',
+    label_startwith: 'Kt\u00f3ry portfel doładować na start?',
+    startwith_hint: 'Wybierz walut\u0119, kt\u00f3r\u0105 chcesz mie\u0107 wst\u0119pnie zasilon\u0105 w tym demo \u2014 niezale\u017cnie od miejsca zamieszkania.',
+    opt_poland: '\ud83c\uddf5\ud83c\uddf1 Polska',
+    opt_nigeria: '\ud83c\uddf3\ud83c\uddec Nigeria',
+    opt_fund_pln: '\ud83c\uddf5\ud83c\uddf1 Zacznij z PLN',
+    opt_fund_ngn: '\ud83c\uddf3\ud83c\uddec Zacznij z NGN',
+    btn_login: 'Zaloguj si\u0119',
+    btn_signup: 'Za\u0142\u00f3\u017c konto',
+    auth_error_generic: 'Wpisz poprawny email i has\u0142o o d\u0142ugo\u015bci co najmniej 6 znak\u00f3w.',
+    foot_new_here: 'Nowy tutaj?',
+    foot_have_account: 'Masz ju\u017c konto?',
+    link_create_account: 'Za\u0142\u00f3\u017c konto',
+    link_login: 'Zaloguj si\u0119',
+    demo_note: '\ud83d\udca1 To interaktywne demo na \u017cywo \u2014 wpisz dowolny email/has\u0142o, aby zacz\u0105\u0107. Dane resetuj\u0105 si\u0119 po od\u015bwie\u017ceniu strony.',
+    toast_account_created: 'Konto utworzone \u2014 witaj w RemitRova!',
+    toast_welcome_back: 'Witaj ponownie',
+    toast_local_login: 'Zalogowano (tryb demo u\u017cywa lokalnego konta).',
+    toast_no_account_found: 'Nie znaleziono istniej\u0105cego konta demo \u2014 utworzono nowe.',
+
+    // Header / nav
+    verified_account: 'Konto zweryfikowane',
+    nav_home: 'Start',
+    nav_send: 'Wy\u015blij',
+    nav_history: 'Historia',
+    nav_profile: 'Profil',
+
+    // Dashboard
+    poland_wallet: 'Portfel polski',
+    nigeria_wallet: 'Portfel nigeryjski',
+    quick_actions: 'Szybkie akcje',
+    qa_send: 'Wy\u015blij',
+    qa_get_nuban: 'Numer NUBAN',
+    qa_get_iban: 'Numer IBAN',
+    qa_history: 'Historia',
+    recent_activity: 'Ostatnia aktywno\u015b\u0107',
+    see_all: 'Zobacz wszystko',
+    empty_activity: 'Brak aktywno\u015bci \u2014 wy\u015blij lub odbierz sw\u00f3j pierwszy przelew.',
+
+    // Send flow
+    send_money_title: 'Wy\u015blij pieni\u0105dze',
+    you_send: 'Wysy\u0142asz',
+    balance_label: 'Saldo',
+    they_receive: 'Odbiorca otrzymuje',
+    fee_label: 'Op\u0142ata',
+    total_to_pay: '\u0141\u0105cznie do zap\u0142aty',
+    continue_btn: 'Dalej',
+    who_receiving: 'Kto otrzyma ten przelew?',
+    recipient_name_label: 'Imi\u0119 odbiorcy',
+    ph_recipient_name: 'Imi\u0119 i nazwisko',
+    account_number_label: 'Numer konta',
+    ph_account_number: '10 cyfr',
+    review_transfer_btn: 'Sprawd\u017a przelew',
+    back_btn: 'Wstecz',
+    confirm_send_btn: 'Potwierd\u017a i wy\u015blij',
+    processing_1: 'Kierowanie do licencjonowanego partnera p\u0142atniczego\u2026',
+    processing_2: 'Weryfikacja konta odbiorcy\u2026',
+    processing_3: 'Potwierdzanie \u015brodk\u00f3w\u2026',
+    transfer_sent_title: 'Przelew wys\u0142any',
+    done_btn: 'Gotowe',
+    err_amount_zero: 'Wpisz kwot\u0119 wi\u0119ksz\u0105 od zera.',
+    err_insufficient: 'Niewystarczaj\u0105ce saldo na t\u0119 kwot\u0119 wraz z op\u0142atami.',
+    err_pick_recipient: 'Wybierz zapisanego odbiorc\u0119 lub wpisz nowego.',
+    review_recipient: 'Odbiorca',
+    review_account: 'Konto',
+    review_you_send: 'Wysy\u0142asz',
+    review_fee: 'Op\u0142ata (1,2%)',
+    review_rate: 'Kurs wymiany',
+    review_they_receive: 'Odbiorca otrzymuje',
+    review_total: '\u0141\u0105cznie pobrane',
+    bank_transfer: 'Przelew bankowy',
+
+    // Receive flow
+    receive_title_ngn: 'Tw\u00f3j nigeryjski NUBAN',
+    receive_title_pln: 'Tw\u00f3j polski IBAN',
+    receive_hint_ngn: 'Udost\u0119pnij ten numer konta, aby osoby w Nigerii mog\u0142y wys\u0142a\u0107 Ci naira \u2014 trafiaj\u0105 bezpo\u015brednio do Twojego portfela NGN.',
+    receive_hint_pln: 'Udost\u0119pnij ten IBAN, aby osoby w Polsce mog\u0142y wys\u0142a\u0107 Ci z\u0142ot\u00f3wki \u2014 trafiaj\u0105 natychmiast do portfela PLN, a nast\u0119pnie automatycznie przeliczaj\u0105 si\u0119 na naira w portfelu nigeryjskim.',
+    nuban_label: 'NUBAN (konto wirtualne)',
+    iban_label: 'IBAN',
+    bank_powered_by: 'RemitRova \u00b7 Obs\u0142ugiwane przez licencjonowanego partnera bankowego',
+    copy_number_btn: 'Kopiuj numer',
+    toast_copied: 'Numer konta skopiowany',
+    please_wait: 'Prosz\u0119 czeka\u0107\u2026',
+    toast_coming_soon: 'Ta funkcja nie jest jeszcze dost\u0119pna \u2014 wkr\u00f3tce.',
+    nuban_not_provisioned: 'Jeszcze nie przydzielono',
+    coming_soon_label: 'Wkr\u00f3tce',
+    history_coming_soon: 'Historia transakcji nie jest jeszcze dost\u0119pna \u2014 wkr\u00f3tce.',
+    get_my_nuban_btn: 'Uzyskaj m\u00f3j NUBAN',
+    toast_nuban_ready: 'Tw\u00f3j NUBAN jest gotowy.',
+    sim_deposit_intro: 'Narz\u0119dzie demo: zasymuluj, \u017ce kto\u015b wysy\u0142a pieni\u0105dze na to konto, aby zobaczy\u0107 pe\u0142ny proces odbioru.',
+    label_amount_they_send: 'Kwota, kt\u00f3r\u0105 wysy\u0142aj\u0105',
+    label_sender_from: 'Od (imi\u0119 nadawcy)',
+    ph_sender_name: 'np. Chidi Okafor',
+    simulate_deposit_btn: 'Zasymuluj wp\u0142yw \u015brodk\u00f3w',
+    toast_deposit_received: 'Otrzymano wp\u0142at\u0119 \u2014 przeliczanie\u2026',
+
+    // History
+    history_title: 'Historia transakcji',
+    filter_all: 'Wszystkie',
+    filter_received: 'Otrzymane',
+    filter_sent: 'Wys\u0142ane',
+    filter_pending: 'W trakcie',
+    empty_history: 'Nic tu jeszcze nie ma.',
+    status_processing: 'Przetwarzanie',
+
+    // Profile
+    profile_title: 'Profil',
+    profile_iban_label: '\ud83c\uddf5\ud83c\uddf1 IBAN (portfel PLN)',
+    profile_nuban_label: '\ud83c\uddf3\ud83c\uddec NUBAN (portfel NGN)',
+    profile_homebase_label: 'Miejsce zamieszkania',
+    profile_kyc_label: 'Status KYC',
+    profile_kyc_value: '\u2713 Zweryfikowano (demo)',
+    profile_provider_label: 'Dostawca (ta wersja)',
+    profile_provider_value: 'Symulowany',
+    profile_rate_label: '\u0179r\u00f3d\u0142o kursu na \u017cywo',
+    profile_rate_value: 'Statyczny kurs demo',
+    reset_demo_btn: 'Zresetuj dane demo',
+    logout_btn: 'Wyloguj si\u0119',
+    reset_confirm: 'To wyczy\u015bci Twoje symulowane salda i histori\u0119. Kontynuowa\u0107?',
+
+    // Transactions (templates)
+    tx_welcome_bonus: 'Bonus powitalny',
+    tx_sent_to: name => `Wys\u0142ano do ${name}`,
+    tx_incoming_from: name => `Wp\u0142ata od ${name}`,
+    tx_converted_from: name => `Przeliczono z przelewu ${'{CUR}'} od ${name}`,
+    tx_now_spendable: cur => `Dost\u0119pne w portfelu ${cur === 'NGN' ? 'nigeryjskim' : 'polskim'}`,
+    tx_converting_to: cur => `przeliczanie na ${cur}\u2026`,
+    tx_converted_to: (cur, amt) => `przeliczono na ${cur} ${amt}`,
+    nip_transfer: 'Przelew NIP',
+    sepa_transfer: 'Przelew SEPA',
+
+    success_text: (name, sym, amt, curLabel) => `${name} otrzyma ${sym}${amt} na ${curLabel}.`,
+    into_ng_bank: 'nigeryjskie konto bankowe',
+    into_pl_iban: 'polski IBAN',
+    toast_wallet_credited: (sym, amt, cur) => `Dodano ${sym}${amt} do portfela ${cur}`,
+
+    country_home_pl: '\ud83c\uddf5\ud83c\uddf1 Polska',
+    country_home_ng: '\ud83c\uddf3\ud83c\uddec Nigeria',
+  }
+};
+
+let currentLang = localStorage.getItem('remitrova_demo_lang') || 'en';
+
+function t(key) {
+  return (I18N[currentLang] && I18N[currentLang][key] !== undefined) ? I18N[currentLang][key] : I18N.en[key];
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('remitrova_demo_lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  applyStaticTranslations();
+  if (typeof state !== 'undefined' && state) {
+    renderAll();
+    const activePage = document.querySelector('.app-page.active');
+    if (activePage && activePage.id === 'page-history') renderHistory();
+    if (activePage && activePage.id === 'page-profile') renderProfile();
+  }
+}
