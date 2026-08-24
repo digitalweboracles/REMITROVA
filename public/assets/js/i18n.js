@@ -158,6 +158,42 @@ const I18N = {
 
     country_home_pl: '\ud83c\uddf5\ud83c\uddf1 Poland',
     country_home_ng: '\ud83c\uddf3\ud83c\uddec Nigeria',
+
+    // Landing page
+    landing_nav_login: 'Log In',
+    landing_hero_kicker: 'Poland \u21c4 Nigeria',
+    landing_hero_title: 'Money that moves the way your life does \u2014 between Poland and Nigeria.',
+    landing_hero_sub: 'One account, two countries. A real Nigerian NUBAN today, with Poland-side transfers on the way \u2014 built to make sending money home feel like sending a message.',
+    landing_cta_primary: 'Get Started',
+    landing_cta_secondary: 'I already have an account',
+    landing_flow_ng_label: 'Sent from Nigeria',
+    landing_flow_pl_label: 'Ready to spend in Poland',
+    landing_flow_note: 'Here\u2019s the idea we\u2019re building toward \u2014 money sent in one country becoming spendable in the other, automatically. Right now, real NUBAN deposits into your Nigeria wallet are live; the Poland side is coming next.',
+
+    landing_features_kicker: 'Why RemitRova',
+    landing_features_title: 'Built like a real bank, not a wire-transfer form',
+    landing_f1_title: 'A real account number',
+    landing_f1_desc: 'Not a reference code \u2014 an actual Nigerian NUBAN in your name, ready to receive money like any bank account.',
+    landing_f2_title: 'Two countries, one app',
+    landing_f2_desc: 'Poland and Nigeria, side by side. No juggling separate apps or separate logins for each side of your life.',
+    landing_f3_title: 'Built on licensed rails',
+    landing_f3_desc: 'Every deposit is processed through a licensed payment partner \u2014 we never hold your money ourselves.',
+    landing_f4_title: 'Built in the open',
+    landing_f4_desc: 'We\u2019d rather tell you exactly what\u2019s live today and what\u2019s still being built than oversell you on day one.',
+
+    landing_how_kicker: 'How it works today',
+    landing_how_title: 'Three steps to your first deposit',
+    landing_how1_title: 'Create your account',
+    landing_how1_desc: 'Sign up with your name, email, and which country you\u2019re based in \u2014 takes under a minute.',
+    landing_how2_title: 'Get your NUBAN',
+    landing_how2_desc: 'Request your real Nigerian account number directly from your dashboard.',
+    landing_how3_title: 'Share it, get paid',
+    landing_how3_desc: 'Give that account number to anyone sending you Naira \u2014 it lands straight in your wallet.',
+
+    landing_final_title: 'Ready to get your account?',
+    landing_final_sub: 'Create your account and get your NUBAN in the next few minutes.',
+    landing_footer_text: '\u00a9 2026 RemitRova. All rights reserved.',
+    powered_by: 'Powered by',
   },
 
   pl: {
@@ -312,6 +348,42 @@ const I18N = {
 
     country_home_pl: '\ud83c\uddf5\ud83c\uddf1 Polska',
     country_home_ng: '\ud83c\uddf3\ud83c\uddec Nigeria',
+
+    // Landing page
+    landing_nav_login: 'Zaloguj si\u0119',
+    landing_hero_kicker: 'Polska \u21c4 Nigeria',
+    landing_hero_title: 'Pieni\u0105dze, kt\u00f3re przemieszczaj\u0105 si\u0119 tak jak Twoje \u017cycie \u2014 mi\u0119dzy Polsk\u0105 a Nigeri\u0105.',
+    landing_hero_sub: 'Jedno konto, dwa kraje. Prawdziwy nigeryjski NUBAN ju\u017c dzi\u015b, a przelewy po stronie polskiej w drodze \u2014 tworzone, by wysy\u0142anie pieni\u0119dzy do domu by\u0142o proste jak wiadomo\u015b\u0107.',
+    landing_cta_primary: 'Zacznij',
+    landing_cta_secondary: 'Mam ju\u017c konto',
+    landing_flow_ng_label: 'Wys\u0142ane z Nigerii',
+    landing_flow_pl_label: 'Gotowe do wydania w Polsce',
+    landing_flow_note: 'Oto wizja, kt\u00f3r\u0105 realizujemy \u2014 pieni\u0105dze wys\u0142ane w jednym kraju staj\u0105 si\u0119 automatycznie dost\u0119pne w drugim. Obecnie dzia\u0142aj\u0105 prawdziwe wp\u0142aty NUBAN na Tw\u00f3j portfel nigeryjski; strona polska jest w przygotowaniu.',
+
+    landing_features_kicker: 'Dlaczego RemitRova',
+    landing_features_title: 'Zbudowane jak prawdziwy bank, nie formularz przelewu',
+    landing_f1_title: 'Prawdziwy numer konta',
+    landing_f1_desc: 'Nie kod referencyjny \u2014 prawdziwy nigeryjski NUBAN na Twoje nazwisko, gotowy do odbierania pieni\u0119dzy jak zwyk\u0142e konto bankowe.',
+    landing_f2_title: 'Dwa kraje, jedna aplikacja',
+    landing_f2_desc: 'Polska i Nigeria obok siebie. Bez \u017conglowania osobnymi aplikacjami czy loginami dla ka\u017cdej strony Twojego \u017cycia.',
+    landing_f3_title: 'Oparte na licencjonowanych rozwi\u0105zaniach',
+    landing_f3_desc: 'Ka\u017cda wp\u0142ata jest przetwarzana przez licencjonowanego partnera p\u0142atniczego \u2014 nigdy sami nie przechowujemy Twoich \u015brodk\u00f3w.',
+    landing_f4_title: 'Budowane w spos\u00f3b transparentny',
+    landing_f4_desc: 'Wolimy powiedzie\u0107 dok\u0142adnie, co dzia\u0142a dzi\u015b, a co wci\u0105\u017c budujemy, ni\u017c obieca\u0107 zbyt wiele od pierwszego dnia.',
+
+    landing_how_kicker: 'Jak to dzia\u0142a dzi\u015b',
+    landing_how_title: 'Trzy kroki do pierwszej wp\u0142aty',
+    landing_how1_title: 'Za\u0142\u00f3\u017c konto',
+    landing_how1_desc: 'Zarejestruj si\u0119 podaj\u0105c imi\u0119, email i kraj zamieszkania \u2014 zajmuje mniej ni\u017c minut\u0119.',
+    landing_how2_title: 'Uzyskaj sw\u00f3j NUBAN',
+    landing_how2_desc: 'Za\u017c\u0105daj swojego prawdziwego nigeryjskiego numeru konta bezpo\u015brednio z panelu.',
+    landing_how3_title: 'Udost\u0119pnij i odbierz',
+    landing_how3_desc: 'Podaj ten numer konta ka\u017cdemu, kto wysy\u0142a Ci naira \u2014 trafia prosto do Twojego portfela.',
+
+    landing_final_title: 'Gotowy na swoje konto?',
+    landing_final_sub: 'Za\u0142\u00f3\u017c konto i uzyskaj sw\u00f3j NUBAN w ci\u0105gu kilku minut.',
+    landing_footer_text: '\u00a9 2026 RemitRova. Wszelkie prawa zastrze\u017cone.',
+    powered_by: 'Obs\u0142ugiwane przez',
   }
 };
 

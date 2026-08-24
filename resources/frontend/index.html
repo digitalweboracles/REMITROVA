@@ -14,8 +14,134 @@
 </head>
 <body>
 
+<!-- ============ LANDING / MARKETING SCREEN ============ -->
+<section class="screen active" id="screen-landing">
+
+  <nav class="land-nav">
+    <div class="land-nav-inner">
+      <div class="brandmark"><img src="/assets/img/logo.png" alt="RemitRova" class="brand-logo">RemitRova</div>
+      <div class="land-nav-right">
+        <div class="lang-switch" id="langSwitchLanding">
+          <button type="button" class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+          <button type="button" class="lang-btn" data-lang="pl" onclick="setLang('pl')">PL</button>
+        </div>
+        <a href="#" class="land-login-link" data-i18n="landing_nav_login" onclick="goToAuth('login'); return false;">Log In</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="land-hero">
+    <div class="land-narrow">
+      <div class="land-pill"><span class="pdot"></span><span data-i18n="landing_hero_kicker">Poland ⇄ Nigeria</span></div>
+      <h1 data-i18n="landing_hero_title">Money that moves the way your life does — between Poland and Nigeria.</h1>
+      <p data-i18n="landing_hero_sub">One account, two countries. A real Nigerian NUBAN today, with Poland-side transfers on the way — built to make sending money home feel like sending a message.</p>
+      <div class="land-cta-row">
+        <button class="btn btn-primary" onclick="goToAuth('signup')" data-i18n="landing_cta_primary">Get Started</button>
+        <button class="btn btn-ghost" onclick="goToAuth('login')" data-i18n="landing_cta_secondary">I already have an account</button>
+      </div>
+    </div>
+
+    <div class="land-narrow">
+      <div class="flow-diagram">
+        <div class="flow-country ng">
+          <div class="fc-flag">🇳🇬</div>
+          <div class="fc-label" data-i18n="landing_flow_ng_label">Sent from Nigeria</div>
+          <div class="fc-amt">₦50,000</div>
+        </div>
+        <div class="flow-arrows">
+          <div class="flow-arrow-line"><span class="arrow-icon">→</span><span>NGN → PLN</span></div>
+          <div class="flow-arrow-line reverse"><span class="arrow-icon">→</span><span>PLN → NGN</span></div>
+        </div>
+        <div class="flow-country pl">
+          <div class="fc-flag">🇵🇱</div>
+          <div class="fc-label" data-i18n="landing_flow_pl_label">Ready to spend in Poland</div>
+          <div class="fc-amt">zł 127</div>
+        </div>
+      </div>
+      <p class="hint-text" style="text-align:center; margin-top:22px; max-width:520px; margin-left:auto; margin-right:auto;" data-i18n="landing_flow_note">Here's the idea we're building toward — money sent in one country becoming spendable in the other, automatically. Right now, real NUBAN deposits into your Nigeria wallet are live; the Poland side is coming next.</p>
+    </div>
+  </section>
+
+  <section class="land-section">
+    <div class="land-wrap">
+      <div class="land-section-head">
+        <span class="land-kicker" data-i18n="landing_features_kicker">Why RemitRova</span>
+        <h2 data-i18n="landing_features_title">Built like a real bank, not a wire-transfer form</h2>
+      </div>
+      <div class="land-features-grid">
+        <div class="land-feature-card">
+          <div class="lf-icon">🏦</div>
+          <h3 data-i18n="landing_f1_title">A real account number</h3>
+          <p data-i18n="landing_f1_desc">Not a reference code — an actual Nigerian NUBAN in your name, ready to receive money like any bank account.</p>
+        </div>
+        <div class="land-feature-card">
+          <div class="lf-icon">🌍</div>
+          <h3 data-i18n="landing_f2_title">Two countries, one app</h3>
+          <p data-i18n="landing_f2_desc">Poland and Nigeria, side by side. No juggling separate apps or separate logins for each side of your life.</p>
+        </div>
+        <div class="land-feature-card">
+          <div class="lf-icon">🛡️</div>
+          <h3 data-i18n="landing_f3_title">Built on licensed rails</h3>
+          <p data-i18n="landing_f3_desc">Every deposit is processed through a licensed payment partner — we never hold your money ourselves.</p>
+        </div>
+        <div class="land-feature-card">
+          <div class="lf-icon">📋</div>
+          <h3 data-i18n="landing_f4_title">Built in the open</h3>
+          <p data-i18n="landing_f4_desc">We'd rather tell you exactly what's live today and what's still being built than oversell you on day one.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="land-section" style="padding-top:0;">
+    <div class="land-narrow">
+      <div class="land-section-head">
+        <span class="land-kicker" data-i18n="landing_how_kicker">How it works today</span>
+        <h2 data-i18n="landing_how_title">Three steps to your first deposit</h2>
+      </div>
+      <div class="land-how-steps">
+        <div class="land-how-step">
+          <div class="land-how-num">1</div>
+          <div class="land-how-body">
+            <h3 data-i18n="landing_how1_title">Create your account</h3>
+            <p data-i18n="landing_how1_desc">Sign up with your name, email, and which country you're based in — takes under a minute.</p>
+          </div>
+        </div>
+        <div class="land-how-step">
+          <div class="land-how-num">2</div>
+          <div class="land-how-body">
+            <h3 data-i18n="landing_how2_title">Get your NUBAN</h3>
+            <p data-i18n="landing_how2_desc">Request your real Nigerian account number directly from your dashboard.</p>
+          </div>
+        </div>
+        <div class="land-how-step">
+          <div class="land-how-num">3</div>
+          <div class="land-how-body">
+            <h3 data-i18n="landing_how3_title">Share it, get paid</h3>
+            <p data-i18n="landing_how3_desc">Give that account number to anyone sending you Naira — it lands straight in your wallet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="land-final">
+    <h2 data-i18n="landing_final_title">Ready to get your account?</h2>
+    <p data-i18n="landing_final_sub">Create your account and get your NUBAN in the next few minutes.</p>
+    <button class="btn btn-primary" onclick="goToAuth('signup')" data-i18n="landing_cta_primary">Get Started</button>
+  </section>
+
+  <footer class="land-footer">
+    <div data-i18n="landing_footer_text">© 2026 RemitRova. All rights reserved.</div>
+    <div class="land-footer-credit">
+      <span data-i18n="powered_by">Powered by</span>
+      <a href="https://www.digitalweboracleict.com" target="_blank" rel="noopener">DWO</a>
+    </div>
+  </footer>
+</section>
+
 <!-- ============ AUTH SCREEN ============ -->
-<section class="screen active" id="screen-auth">
+<section class="screen" id="screen-auth">
   <div class="wrap">
     <div class="auth-card">
       <div class="auth-head">
@@ -25,7 +151,7 @@
             <button type="button" class="lang-btn" data-lang="pl" onclick="setLang('pl')">PL</button>
           </div>
         </div>
-        <div class="brandmark" style="justify-content:center; margin-bottom:16px;"><img src="/assets/img/logo.png" alt="RemitRova" class="brand-logo">RemitRova</div>
+        <div class="brandmark" onclick="goToLanding()" style="justify-content:center; margin-bottom:16px; cursor:pointer;"><img src="/assets/img/logo.png" alt="RemitRova" class="brand-logo">RemitRova</div>
         <h1 id="authTitle" data-i18n="login_title">Welcome back</h1>
         <p id="authSub" data-i18n="login_sub">Log in to send or receive money.</p>
       </div>
