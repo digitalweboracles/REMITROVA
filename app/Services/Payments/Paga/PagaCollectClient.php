@@ -41,7 +41,7 @@ class PagaCollectClient
             'callbackUrl' => $data['callbackUrl'],
         ], fn ($v) => $v !== null);
 
-        $payload['hash'] = PagaHasher::buildHash(PagaHashFields::CREATE_PERSISTENT_ACCOUNT, $payload, $this->hashKey);
+        $payload['hash'] = PagaHasher::buildHash(PagaHashFields::REGISTER_PERSISTENT_ACCOUNT, $payload, $this->hashKey);
 
         // Confirmed by Paga support (2026-08-24): the correct path is
         // /registerPersistentPaymentAccount, not /createPersistentPaymentAccount

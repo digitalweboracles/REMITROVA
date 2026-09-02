@@ -18,6 +18,37 @@ class PagaHashFields
         'callbackUrl',
     ];
 
+    /**
+     * NOT YET CONFIRMED BY PAGA — this is an educated guess, not a
+     * documented or support-confirmed field list.
+     *
+     * Paga corrected the endpoint itself from /createPersistentPaymentAccount
+     * to /registerPersistentPaymentAccount (2026-08-24), and the CREATE
+     * hash list above then failed with "Invalid request hash" against
+     * the corrected endpoint. Since UPDATE_PERSISTENT_ACCOUNT below
+     * (which Paga's docs already confirm) includes phoneNumber,
+     * firstName, lastName, and accountName in its hash — not just the
+     * reference/callback fields — this list mirrors that same broader
+     * pattern rather than the narrower CREATE one, on the theory that
+     * "register" and "update" share a hash convention that "create"
+     * (the apparently-outdated doc name) didn't reflect.
+     *
+     * If this doesn't resolve the hash error, don't trust this list —
+     * revert to asking Paga directly rather than guessing further.
+     */
+    public const REGISTER_PERSISTENT_ACCOUNT = [
+        'referenceNumber',
+        'accountReference',
+        'phoneNumber',
+        'firstName',
+        'lastName',
+        'accountName',
+        'financialIdentificationNumber', // optional — included only if present
+        'creditBankId',                  // optional — included only if present
+        'creditBankAccountNumber',       // optional — included only if present
+        'callbackUrl',
+    ];
+
     public const UPDATE_PERSISTENT_ACCOUNT = [
         'referenceNumber',
         'accountIdentifier',
