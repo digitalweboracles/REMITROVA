@@ -118,8 +118,23 @@ class PagaCollectClient
             'fingerprint' => substr(hash('sha256', $this->hashKey), 0, 16),
         ]);
 
+        // Paga support (2026-09-02) confirmed our hash formula and
+        // concatenation are correct, and specifically asked us to check
+        // whether the hash is being sent as a header, and whether it
+        // has a trailing space there. Previously this was ONLY in the
+        // JSON body — never as a header at all. Sending it both places
+        // now, with the header value explicitly trimmed, covers
+        // whichever one their endpoint actually reads.
+        $trimmedHash = trim($payload['hash']);
+
+        Log::info('Paga hash header diagnostic', [
+            'header_value_length' => strlen($trimmedHash),
+            'header_value_preview' => substr($trimmedHash, 0, 12) . '...' . substr($trimmedHash, -12),
+        ]);
+
         $response = Http::withBasicAuth($this->principal, $this->secretKey)
             ->acceptJson()
+            ->withHeaders(['hash' => $trimmedHash])
             ->timeout(20)
             ->post($url, $payload);
 
