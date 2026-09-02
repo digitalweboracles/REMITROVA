@@ -105,6 +105,19 @@ class PagaCollectClient
             'payload' => $payload,
         ]);
 
+        // Diagnostic only — never logs the actual hash key. Logs its
+        // length and a one-way SHA-256 fingerprint of it, so we can
+        // directly confirm (by comparing against a known-good
+        // fingerprint computed separately) whether the value Railway
+        // actually loaded matches what was set — catching the common,
+        // easy-to-miss case of a trailing newline/space or truncation
+        // silently corrupting every hash without changing its length
+        // enough to be obvious.
+        Log::info('Paga hash key diagnostic', [
+            'length' => strlen($this->hashKey),
+            'fingerprint' => substr(hash('sha256', $this->hashKey), 0, 16),
+        ]);
+
         $response = Http::withBasicAuth($this->principal, $this->secretKey)
             ->acceptJson()
             ->timeout(20)
