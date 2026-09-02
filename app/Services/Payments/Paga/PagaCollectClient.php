@@ -43,7 +43,10 @@ class PagaCollectClient
 
         $payload['hash'] = PagaHasher::buildHash(PagaHashFields::CREATE_PERSISTENT_ACCOUNT, $payload, $this->hashKey);
 
-        return $this->post('/createPersistentPaymentAccount', $payload);
+        // Confirmed by Paga support (2026-08-24): the correct path is
+        // /registerPersistentPaymentAccount, not /createPersistentPaymentAccount
+        // as their own docs/Postman collection previously showed.
+        return $this->post('/registerPersistentPaymentAccount', $payload);
     }
 
     public function getPersistentAccount(string $referenceNumber, string $accountIdentifier): array
