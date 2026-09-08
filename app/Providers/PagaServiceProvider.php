@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\Payments\HitchPay\HitchPayClient;
 use App\Services\Payments\HitchPay\HitchPayProvider;
 use App\Services\Payments\Paga\PagaCollectClient;
 use App\Services\Payments\Paga\PagaProvider;
@@ -22,6 +23,14 @@ class PagaServiceProvider extends ServiceProvider
             );
         });
 
+        $this->app->singleton(HitchPayClient::class, function () {
+            return new HitchPayClient(
+                baseUrl: config('hitchpay.base_url'),
+                clientId: config('hitchpay.client_id'),
+                clientSecret: config('hitchpay.client_secret'),
+            );
+        });
+
         $this->app->singleton(ProviderHealthTracker::class);
 
         // Builds the ordered provider list from config/payment_providers.php,
@@ -29,7 +38,7 @@ class PagaServiceProvider extends ServiceProvider
         $this->app->singleton(PersistentAccountProviderManager::class, function ($app) {
             $available = [
                 'paga' => fn () => new PagaProvider($app->make(PagaCollectClient::class)),
-                'hitchpay' => fn () => new HitchPayProvider(),
+                'hitchpay' => fn () => new HitchPayProvider($app->make(HitchPayClient::class)),
             ];
 
             $providers = [];

@@ -28,11 +28,39 @@ Route::get('/dev/seed-test-customer', function (Request $request) {
             'sender_occupation' => 'Engineer',
             'sender_age' => 30,
             'sender_address' => '1 Test Street, Lagos, Nigeria',
+            // HitchPay-required KYC fields — clearly synthetic test
+            // data for sandbox testing only, never used as a stand-in
+            // for real customer identity data in actual provider logic
+            // (HitchPayProvider refuses honestly when this data is
+            // genuinely missing on a real customer — this route exists
+            // specifically to give the sandbox something valid to test
+            // against).
+            'date_of_birth' => '1996-04-12',
+            'nationality' => 'NG',
+            'profile_image_url' => 'https://placehold.co/300x300',
+            'address_house_no' => '1',
+            'address_street' => 'Test Street',
+            'address_city' => 'Lagos',
+            'address_state' => 'Lagos',
+            'address_postal_code' => '100001',
         ]
     );
 
     if (!$customer->phone) {
         $customer->update(['phone' => '08012345678']);
+    }
+
+    if (!$customer->date_of_birth) {
+        $customer->update([
+            'date_of_birth' => '1996-04-12',
+            'nationality' => 'NG',
+            'profile_image_url' => 'https://placehold.co/300x300',
+            'address_house_no' => '1',
+            'address_street' => 'Test Street',
+            'address_city' => 'Lagos',
+            'address_state' => 'Lagos',
+            'address_postal_code' => '100001',
+        ]);
     }
 
     $wallet = $customer->wallets()->firstOrCreate(['currency' => 'NGN'], ['balance' => 0]);

@@ -15,6 +15,9 @@ class Customer extends Authenticatable
         'name', 'email', 'password', 'phone', 'country',
         'sender_formal_name', 'sender_gender', 'sender_occupation',
         'sender_age', 'sender_address',
+        'date_of_birth', 'nationality', 'profile_image_url',
+        'address_house_no', 'address_street', 'address_city',
+        'address_state', 'address_postal_code',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -25,6 +28,7 @@ class Customer extends Authenticatable
             'email_verified_at' => 'datetime',
             'kyc_verified_at' => 'datetime',
             'password' => 'hashed',
+            'date_of_birth' => 'date',
         ];
     }
 
@@ -50,5 +54,28 @@ class Customer extends Authenticatable
             && filled($this->sender_occupation)
             && filled($this->sender_age)
             && filled($this->sender_address);
+    }
+
+    /**
+     * HitchPay's customer enrollment requires all of these — a
+     * distinct, more detailed set than Paga's IMTO requirement, and
+     * not currently collected at signup. Nothing calls this to block
+     * signup/login; it exists purely so HitchPayProvider can check
+     * before attempting enrollment and refuse honestly (naming
+     * exactly what's missing) rather than sending fabricated values.
+     */
+    public function hasCompletedHitchPayKyc(): bool
+    {
+        return filled($this->name)
+            && filled($this->email)
+            && filled($this->phone)
+            && filled($this->date_of_birth)
+            && filled($this->nationality)
+            && filled($this->profile_image_url)
+            && filled($this->address_house_no)
+            && filled($this->address_street)
+            && filled($this->address_city)
+            && filled($this->address_state)
+            && filled($this->address_postal_code);
     }
 }

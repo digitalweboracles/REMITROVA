@@ -10,11 +10,13 @@ return [
     | broken from repeated recent failures), the next one is tried
     | automatically — this is the active-active failover list.
     |
-    | HitchPay is registered here as a stub (see
-    | App\Services\Payments\HitchPay\HitchPayProvider) — it will always
-    | fail until a real HitchPay integration replaces the stub, but its
-    | presence here proves the failover chain has a second link.
+    | HitchPay first (2026-09-08): both providers are now genuinely
+    | implemented (see App\Services\Payments\HitchPay and \Paga), but
+    | Paga's sandbox is still returning an unresolved 401 hash error
+    | despite extensive back-and-forth with their support — moved to
+    | fallback position until that's resolved. Swap this back once
+    | Paga's issue is fixed, or leave both running active-active.
     */
-    'provider_order' => ['paga', 'hitchpay'],
+    'provider_order' => ['hitchpay', 'paga'],
 
 ];

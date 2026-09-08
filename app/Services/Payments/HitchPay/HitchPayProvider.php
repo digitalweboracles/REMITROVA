@@ -8,29 +8,25 @@ use App\Services\Payments\ProviderAccountResult;
 use App\Services\Payments\ProviderRequestFailedException;
 
 /**
- * HitchPayProvider — STUB.
+ * Real HitchPay adapter — genuinely calls their API now (see
+ * HitchPayClient), confirmed against their published documentation.
  *
- * This class exists to prove the provider abstraction genuinely
- * supports a second provider (it implements the same interface
- * PagaProvider does, and can be registered in the same manager), but
- * it does NOT talk to a real HitchPay API yet. We don't have their
- * API credentials, endpoint names, or request-signing requirements —
- * inventing plausible-looking details for those would be actively
- * wrong, not just incomplete, since it would look like a working
- * integration without being one.
- *
- * To make this real once HitchPay's API details are available:
- *   1. Build a HitchPayClient (mirroring PagaCollectClient's shape —
- *      HTTP client, whatever auth/signing HitchPay requires).
- *   2. Replace the body of createPersistentAccount() below to call it
- *      and map their response into a ProviderAccountResult, the same
- *      way PagaProvider does.
- *   3. Register this provider in config/payment_providers.php.
- * Nothing else in the app needs to change — that's the point of the
- * interface.
+ * One structural difference from Paga worth being explicit about:
+ * HitchPay requires a separate customer *enrollment* step (collecting
+ * date of birth, nationality, a profile photo, and a structured
+ * address for KYC purposes) before an account can be generated. We
+ * don't currently collect that data at signup. Rather than sending
+ * fabricated identity data to a real KYC-oriented endpoint — which
+ * would be a genuinely bad idea, not just a coding shortcut — this
+ * checks for that data up front and refuses honestly, naming exactly
+ * what's missing, if it isn't there.
  */
 class HitchPayProvider implements PersistentAccountProviderInterface
 {
+    public function __construct(private readonly HitchPayClient $client)
+    {
+    }
+
     public function name(): string
     {
         return 'hitchpay';
@@ -38,9 +34,68 @@ class HitchPayProvider implements PersistentAccountProviderInterface
 
     public function createPersistentAccount(Customer $customer, string $accountReference, string $callbackUrl): ProviderAccountResult
     {
-        throw new ProviderRequestFailedException(
-            'hitchpay',
-            'HitchPay integration is not yet implemented — this is a stub proving the abstraction works, pending real API credentials and documentation from HitchPay.',
+        if (!$customer->hasCompletedHitchPayKyc()) {
+            throw new ProviderRequestFailedException(
+                'hitchpay',
+                'Customer is missing required KYC fields for HitchPay enrollment (needs: date of birth, nationality, profile photo URL, and full structured address). These aren\'t collected at signup yet — this is an honest refusal, not a real API failure.',
+            );
+        }
+
+        [$firstName, $lastName] = $this->splitName($customer->name);
+
+        try {
+            $enrollResponse = $this->client->enrollCustomer([
+                'customerid' => 'RR-' . $customer->id,
+                'email' => $customer->email,
+                'phone' => $customer->phone,
+                'firstname' => $firstName,
+                'lastname' => $lastName,
+                'dob' => $customer->date_of_birth->format('d-m-Y'),
+                'nationality' => $customer->nationality,
+                'image' => $customer->profile_image_url,
+                'address' => [
+                    'house_no' => (int) $customer->address_house_no,
+                    'street' => $customer->address_street,
+                    'city' => $customer->address_city,
+                    'state' => $customer->address_state,
+                    'postal_code' => $customer->address_postal_code,
+                    'country' => $customer->country, // already PL/NG — our enum matches ISO 3166-1 alpha-2 directly
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            throw new ProviderRequestFailedException('hitchpay', 'Enrollment failed: ' . $e->getMessage());
+        }
+
+        $customerUuid = $enrollResponse['data']['uuid'] ?? null;
+
+        if (!$customerUuid) {
+            throw new ProviderRequestFailedException('hitchpay', 'Enrollment succeeded but response did not include a uuid.', ['raw_response' => $enrollResponse]);
+        }
+
+        try {
+            $accountResponse = $this->client->generateBankAccount($customerUuid, 'NGN');
+        } catch (\Throwable $e) {
+            throw new ProviderRequestFailedException('hitchpay', 'Account generation failed: ' . $e->getMessage());
+        }
+
+        $accountData = $accountResponse['data'] ?? [];
+        $accountNumber = $accountData['account_number'] ?? null;
+
+        if (!$accountNumber) {
+            throw new ProviderRequestFailedException('hitchpay', 'Account generation did not return an account number.', ['raw_response' => $accountResponse]);
+        }
+
+        return new ProviderAccountResult(
+            providerName: 'hitchpay',
+            accountIdentifier: $accountNumber,
+            bankName: $accountData['bank_name'] ?? 'HitchPay',
+            rawResponse: $accountResponse,
         );
+    }
+
+    private function splitName(string $fullName): array
+    {
+        $parts = explode(' ', trim($fullName), 2);
+        return [$parts[0], $parts[1] ?? $parts[0]];
     }
 }
