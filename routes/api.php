@@ -14,9 +14,6 @@ Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login')
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me'])->name('auth.me');
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
-
-    Route::post('/accounts/nuban', [PersistentAccountController::class, 'store'])
-        ->name('accounts.nuban.store');
-    Route::get('/accounts/nuban', [PersistentAccountController::class, 'show'])
-        ->name('accounts.nuban.show');
+    Route::post('/accounts/nuban', [PersistentAccountController::class, 'store'])->name('accounts.nuban.store');
+    Route::get('/accounts/nuban', [PersistentAccountController::class, 'show'])->name('accounts.nuban.show');
 });

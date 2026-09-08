@@ -13,16 +13,12 @@ return new class extends Migration
             $table->string('provider');
             $table->string('event_type');
             $table->string('provider_reference')->nullable();
-
             $table->json('headers');
             $table->json('payload');
             $table->boolean('hash_verified');
-
             $table->timestamp('processed_at')->nullable();
             $table->text('processing_error')->nullable();
-
             $table->timestamps();
-
             $table->unique(['provider', 'provider_reference']);
         });
     }

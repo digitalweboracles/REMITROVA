@@ -5,23 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <title>RemitRova — Poland ⇄ Nigeria, instantly</title>
 <meta name="description" content="Send and receive money between Poland and Nigeria in seconds.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="RemitRova — Poland ⇄ Nigeria, instantly">
-<meta property="og:description" content="Send and receive money between Poland and Nigeria in seconds.">
 <link rel="icon" href="/assets/img/logo.png" type="image/png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body>
 
-<!-- ============ LANDING / MARKETING SCREEN ============ -->
+<!-- ============ LANDING ============ -->
 <section class="screen active" id="screen-landing">
-
   <nav class="land-nav">
     <div class="land-nav-inner">
       <div class="brandmark"><img src="/assets/img/logo.png" alt="RemitRova" class="brand-logo">RemitRova</div>
       <div class="land-nav-right">
-        <div class="lang-switch" id="langSwitchLanding">
+        <div class="lang-switch">
           <button type="button" class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
           <button type="button" class="lang-btn" data-lang="pl" onclick="setLang('pl')">PL</button>
         </div>
@@ -34,18 +30,15 @@
     <div class="land-narrow">
       <div class="land-pill"><span class="pdot"></span><span data-i18n="landing_hero_kicker">Poland ⇄ Nigeria</span></div>
       <h1 data-i18n="landing_hero_title">Money that moves the way your life does — between Poland and Nigeria.</h1>
-      <p data-i18n="landing_hero_sub">One account, two countries. A real Nigerian NUBAN today, with Poland-side transfers on the way — built to make sending money home feel like sending a message.</p>
+      <p data-i18n="landing_hero_sub">One account, two countries.</p>
       <div class="land-cta-row">
         <button class="btn btn-primary" onclick="goToAuth('signup')" data-i18n="landing_cta_primary">Get Started</button>
         <button class="btn btn-ghost" onclick="goToAuth('login')" data-i18n="landing_cta_secondary">I already have an account</button>
       </div>
     </div>
-
     <div class="land-narrow">
-      <div class="hero-photo-frame">
-        <img src="/assets/img/hero-split.jpg" alt="A woman in Poland and a man in Nigeria both looking at their phones, connected by RemitRova" class="hero-photo">
-      </div>
-      <p class="hint-text" style="text-align:center; margin-top:22px; max-width:520px; margin-left:auto; margin-right:auto;" data-i18n="landing_flow_note">Here's the idea we're building toward — money sent in one country becoming spendable in the other, automatically. Right now, real NUBAN deposits into your Nigeria wallet are live; the Poland side is coming next.</p>
+      <div class="hero-photo-frame"><img src="/assets/img/hero-split.jpg" alt="A woman in Poland and a man in Nigeria both looking at their phones, connected by RemitRova" class="hero-photo"></div>
+      <p class="hint-text" style="text-align:center; margin-top:22px; max-width:520px; margin-left:auto; margin-right:auto;" data-i18n="landing_flow_note">Real NUBAN deposits into your Nigeria wallet are live; the Poland side is coming next.</p>
     </div>
   </section>
 
@@ -57,48 +50,17 @@
       </div>
       <div class="land-stories-grid">
         <figure class="land-story-card">
-          <img src="/assets/img/story-received-family.jpg" alt="A family in Nigeria celebrating a money transfer received notification on their phone" loading="lazy">
+          <img src="/assets/img/story-received-family.jpg" alt="A family in Nigeria celebrating a money transfer received notification" loading="lazy">
           <figcaption data-i18n="landing_story1_caption">A family in Lagos, celebrating money that just landed.</figcaption>
         </figure>
         <figure class="land-story-card">
-          <img src="/assets/img/story-sent-warsaw.jpg" alt="A woman in Warsaw, Poland sending money back to Nigeria from her phone" loading="lazy">
+          <img src="/assets/img/story-sent-warsaw.jpg" alt="A woman in Warsaw sending money back to Nigeria from her phone" loading="lazy">
           <figcaption data-i18n="landing_story2_caption">Sending money home from an apartment in Warsaw.</figcaption>
         </figure>
         <figure class="land-story-card">
-          <img src="/assets/img/story-business.jpg" alt="A businessman receiving a cross-border payment notification on his laptop" loading="lazy">
+          <img src="/assets/img/story-business.jpg" alt="A businessman receiving a cross-border payment notification" loading="lazy">
           <figcaption data-i18n="landing_story3_caption">Cross-border business, made as simple as a notification.</figcaption>
         </figure>
-      </div>
-    </div>
-  </section>
-
-  <section class="land-section">
-    <div class="land-wrap">
-      <div class="land-section-head">
-        <span class="land-kicker" data-i18n="landing_features_kicker">Why RemitRova</span>
-        <h2 data-i18n="landing_features_title">Built like a real bank, not a wire-transfer form</h2>
-      </div>
-      <div class="land-features-grid">
-        <div class="land-feature-card">
-          <div class="lf-icon">🏦</div>
-          <h3 data-i18n="landing_f1_title">A real account number</h3>
-          <p data-i18n="landing_f1_desc">Not a reference code — an actual Nigerian NUBAN in your name, ready to receive money like any bank account.</p>
-        </div>
-        <div class="land-feature-card">
-          <div class="lf-icon">🌍</div>
-          <h3 data-i18n="landing_f2_title">Two countries, one app</h3>
-          <p data-i18n="landing_f2_desc">Poland and Nigeria, side by side. No juggling separate apps or separate logins for each side of your life.</p>
-        </div>
-        <div class="land-feature-card">
-          <div class="lf-icon">🛡️</div>
-          <h3 data-i18n="landing_f3_title">Built on licensed rails</h3>
-          <p data-i18n="landing_f3_desc">Every deposit is processed through a licensed payment partner — we never hold your money ourselves.</p>
-        </div>
-        <div class="land-feature-card">
-          <div class="lf-icon">📋</div>
-          <h3 data-i18n="landing_f4_title">Built in the open</h3>
-          <p data-i18n="landing_f4_desc">We'd rather tell you exactly what's live today and what's still being built than oversell you on day one.</p>
-        </div>
       </div>
     </div>
   </section>
@@ -110,53 +72,31 @@
         <h2 data-i18n="landing_how_title">Three steps to your first deposit</h2>
       </div>
       <div class="land-how-steps">
-        <div class="land-how-step">
-          <div class="land-how-num">1</div>
-          <div class="land-how-body">
-            <h3 data-i18n="landing_how1_title">Create your account</h3>
-            <p data-i18n="landing_how1_desc">Sign up with your name, email, and which country you're based in — takes under a minute.</p>
-          </div>
-        </div>
-        <div class="land-how-step">
-          <div class="land-how-num">2</div>
-          <div class="land-how-body">
-            <h3 data-i18n="landing_how2_title">Get your NUBAN</h3>
-            <p data-i18n="landing_how2_desc">Request your real Nigerian account number directly from your dashboard.</p>
-          </div>
-        </div>
-        <div class="land-how-step">
-          <div class="land-how-num">3</div>
-          <div class="land-how-body">
-            <h3 data-i18n="landing_how3_title">Share it, get paid</h3>
-            <p data-i18n="landing_how3_desc">Give that account number to anyone sending you Naira — it lands straight in your wallet.</p>
-          </div>
-        </div>
+        <div class="land-how-step"><div class="land-how-num">1</div><div class="land-how-body"><h3 data-i18n="landing_how1_title">Create your account</h3><p data-i18n="landing_how1_desc">Sign up in under a minute.</p></div></div>
+        <div class="land-how-step"><div class="land-how-num">2</div><div class="land-how-body"><h3 data-i18n="landing_how2_title">Get your NUBAN</h3><p data-i18n="landing_how2_desc">Request your real account number.</p></div></div>
+        <div class="land-how-step"><div class="land-how-num">3</div><div class="land-how-body"><h3 data-i18n="landing_how3_title">Share it, get paid</h3><p data-i18n="landing_how3_desc">It lands straight in your wallet.</p></div></div>
       </div>
     </div>
   </section>
 
   <section class="land-final">
     <h2 data-i18n="landing_final_title">Ready to get your account?</h2>
-    <p data-i18n="landing_final_sub">Create your account and get your NUBAN in the next few minutes.</p>
+    <p data-i18n="landing_final_sub">Create your account and get your NUBAN in minutes.</p>
     <button class="btn btn-primary" onclick="goToAuth('signup')" data-i18n="landing_cta_primary">Get Started</button>
   </section>
 
   <footer class="land-footer">
     <div data-i18n="landing_footer_text">© 2026 RemitRova. All rights reserved.</div>
-    <div class="land-footer-credit">
-      <span data-i18n="powered_by">Powered by</span>
-      <a href="https://www.digitalweboracleict.com" target="_blank" rel="noopener">DWO</a>
-    </div>
   </footer>
 </section>
 
-<!-- ============ AUTH SCREEN ============ -->
+<!-- ============ AUTH ============ -->
 <section class="screen" id="screen-auth">
   <div class="wrap">
     <div class="auth-card">
       <div class="auth-head">
         <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
-          <div class="lang-switch" id="langSwitchAuth">
+          <div class="lang-switch">
             <button type="button" class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
             <button type="button" class="lang-btn" data-lang="pl" onclick="setLang('pl')">PL</button>
           </div>
@@ -165,12 +105,10 @@
         <h1 id="authTitle" data-i18n="login_title">Welcome back</h1>
         <p id="authSub" data-i18n="login_sub">Log in to send or receive money.</p>
       </div>
-
       <div class="auth-toggle">
-        <button type="button" id="tabLogin" class="active" data-i18n="tab_login" onclick="setAuthMode('login')">Log In</button>
-        <button type="button" id="tabSignup" data-i18n="tab_signup" onclick="setAuthMode('signup')">Create Account</button>
+        <button type="button" id="tabLogin" class="active" data-i18n="tab_login" onclick="goToAuth('login')">Log In</button>
+        <button type="button" id="tabSignup" data-i18n="tab_signup" onclick="goToAuth('signup')">Create Account</button>
       </div>
-
       <form id="authForm" onsubmit="return handleAuthSubmit(event)">
         <div class="field" id="fieldName" style="display:none;">
           <label for="authName" data-i18n="label_fullname">Full name</label>
@@ -194,29 +132,24 @@
         <div class="error-text" id="authError"></div>
         <button type="submit" class="btn btn-primary" id="authSubmitBtn" data-i18n="btn_login" style="margin-top:8px;">Log In</button>
       </form>
-
       <div class="auth-foot" id="authFoot">
         <span data-i18n="foot_new_here">New here?</span>
-        <a href="#" onclick="setAuthMode('signup'); return false;" style="font-weight:800; text-decoration:underline;" data-i18n="link_create_account">Create an account</a>
+        <a href="#" onclick="goToAuth('signup'); return false;" style="font-weight:800; text-decoration:underline;" data-i18n="link_create_account">Create an account</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ APP SHELL ============ -->
+<!-- ============ APP ============ -->
 <section class="screen" id="screen-app">
-
   <header class="app-header">
     <div class="app-header-inner">
       <div class="who">
         <div class="avatar" id="headerAvatar">A</div>
-        <div>
-          <div class="who-name" id="headerName">—</div>
-          <div class="who-sub" data-i18n="verified_account">Verified account</div>
-        </div>
+        <div><div class="who-name" id="headerName">—</div><div class="who-sub" data-i18n="verified_account">Verified account</div></div>
       </div>
       <div style="display:flex; align-items:center; gap:10px;">
-        <div class="lang-switch" id="langSwitchApp">
+        <div class="lang-switch">
           <button type="button" class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
           <button type="button" class="lang-btn" data-lang="pl" onclick="setLang('pl')">PL</button>
         </div>
@@ -226,37 +159,19 @@
   </header>
 
   <main class="app-main">
-
-    <!-- ---------- DASHBOARD PAGE ---------- -->
     <div class="app-page active" id="page-home">
       <div class="wallets-row" id="walletsRow"></div>
-
-      <div class="section-h" style="margin-top:6px;">
-        <h2 data-i18n="quick_actions">Quick actions</h2>
-      </div>
+      <div class="section-h" style="margin-top:6px;"><h2 data-i18n="quick_actions">Quick actions</h2></div>
       <div class="quick-actions">
-        <button class="qa-btn" onclick="comingSoon()">
-          <div class="qa-icon">↗️</div><div class="qa-label" data-i18n="qa_send">Send</div>
-        </button>
-        <button class="qa-btn" onclick="openReceiveSheet()">
-          <div class="qa-icon">🇳🇬</div><div class="qa-label" data-i18n="qa_get_nuban">Get NUBAN</div>
-        </button>
-        <button class="qa-btn" onclick="comingSoon()">
-          <div class="qa-icon">🇵🇱</div><div class="qa-label" data-i18n="qa_get_iban">Get IBAN</div>
-        </button>
-        <button class="qa-btn" onclick="goto('page-history')">
-          <div class="qa-icon">🧾</div><div class="qa-label" data-i18n="qa_history">History</div>
-        </button>
+        <button class="qa-btn" onclick="comingSoon()"><div class="qa-icon">↗️</div><div class="qa-label" data-i18n="qa_send">Send</div></button>
+        <button class="qa-btn" onclick="openReceiveSheet()"><div class="qa-icon">🇳🇬</div><div class="qa-label" data-i18n="qa_get_nuban">Get NUBAN</div></button>
+        <button class="qa-btn" onclick="comingSoon()"><div class="qa-icon">🇵🇱</div><div class="qa-label" data-i18n="qa_get_iban">Get IBAN</div></button>
+        <button class="qa-btn" onclick="goto('page-history')"><div class="qa-icon">🧾</div><div class="qa-label" data-i18n="qa_history">History</div></button>
       </div>
-
-      <div class="section-h">
-        <h2 data-i18n="recent_activity">Recent activity</h2>
-        <a href="#" onclick="goto('page-history'); return false;" data-i18n="see_all">See all</a>
-      </div>
+      <div class="section-h"><h2 data-i18n="recent_activity">Recent activity</h2><a href="#" onclick="goto('page-history'); return false;" data-i18n="see_all">See all</a></div>
       <div class="tx-list" id="txListHome"></div>
     </div>
 
-    <!-- ---------- HISTORY PAGE ---------- -->
     <div class="app-page" id="page-history">
       <div class="section-h" style="margin-top:4px;"><h2 style="font-family:var(--font-display); font-size:21px;" data-i18n="history_title">Transaction history</h2></div>
       <div class="filter-tabs" id="historyFilters">
@@ -268,7 +183,6 @@
       <div class="tx-list" id="txListFull" style="margin:0 20px;"></div>
     </div>
 
-    <!-- ---------- PROFILE PAGE ---------- -->
     <div class="app-page" id="page-profile">
       <div class="section-h" style="margin-top:4px;"><h2 style="font-family:var(--font-display); font-size:21px;" data-i18n="profile_title">Profile</h2></div>
       <div class="profile-block">
@@ -277,16 +191,13 @@
           <div class="profile-name" id="profileName">—</div>
           <div class="profile-email" id="profileEmail">—</div>
         </div>
-
         <div class="info-list">
           <div class="info-row"><span class="lbl" data-i18n="profile_nuban_label">🇳🇬 NUBAN (NGN wallet)</span><span class="val" id="profileNuban">—</span></div>
           <div class="info-row"><span class="lbl" data-i18n="profile_homebase_label">Home base</span><span class="val" id="profileCountry">—</span></div>
         </div>
-
         <button class="btn-danger-text" style="width:100%;" onclick="logout()" data-i18n="logout_btn">Log out</button>
       </div>
     </div>
-
   </main>
 
   <nav class="bottom-nav">
@@ -299,7 +210,6 @@
   </nav>
 </section>
 
-<!-- ============ RECEIVE / NUBAN SHEET ============ -->
 <div class="sheet-backdrop" id="receiveBackdrop" onclick="closeReceiveSheet()"></div>
 <div class="sheet" id="receiveSheet" role="dialog" aria-modal="true" aria-label="Receive money">
   <div class="sheet-handle"></div>
@@ -309,14 +219,12 @@
   </div>
   <div class="sheet-body">
     <p class="hint-text" id="receiveSheetHint" style="margin-bottom:18px;"></p>
-
     <div class="nuban-card">
-      <div style="font-size:12px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.04em; font-weight:800;" id="receiveAccountLabel">Account number</div>
+      <div style="font-size:12px; color:var(--ink-faint); text-transform:uppercase; font-weight:800;" id="receiveAccountLabel">Account number</div>
       <div class="nuban-num" id="receiveAccountNumber">—</div>
       <div class="nuban-bank" id="receiveBankName">—</div>
       <button class="btn btn-ghost copy-btn" id="copyAccountBtn" onclick="copyAccountNumber()" data-i18n="copy_number_btn" style="display:none;">Copy number</button>
     </div>
-
     <div class="provision-box">
       <div class="error-text" id="nubanError"></div>
       <button class="btn btn-primary" id="provisionNubanBtn" onclick="provisionNuban()">Get my NUBAN</button>

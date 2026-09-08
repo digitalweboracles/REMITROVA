@@ -10,17 +10,12 @@ return [
     ],
 
     'business' => [
-        'base_url' => env(
-            'PAGA_BUSINESS_BASE_URL',
-            'https://beta.mypaga.com/paga-webservices/business-rest/secured'
-        ),
+        'base_url' => env('PAGA_BUSINESS_BASE_URL', 'https://beta.mypaga.com/paga-webservices/business-rest/secured'),
         'principal' => env('PAGA_PRINCIPAL'),
         'credentials' => env('PAGA_SECRET_KEY'),
         'hash_key' => env('PAGA_HASH_KEY'),
     ],
 
-    // Confirmed in Paga's docs: on all environments, Paga's own "bank"
-    // for wallet-style (non-external-bank) validation is this fixed UUID.
     'paga_own_bank_uuid' => 'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA',
 
     'imto' => [

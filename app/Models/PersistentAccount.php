@@ -17,9 +17,7 @@ class PersistentAccount extends Model
 
     protected function casts(): array
     {
-        return [
-            'raw_create_response' => 'array',
-        ];
+        return ['raw_create_response' => 'array'];
     }
 
     public function customer()

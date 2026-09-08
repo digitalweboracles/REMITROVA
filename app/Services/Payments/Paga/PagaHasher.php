@@ -2,19 +2,6 @@
 
 namespace App\Services\Payments\Paga;
 
-/**
- * PagaHasher — builds and verifies Paga's SHA-512 request/callback hashes.
- *
- * Paga's own confirmation:
- *   "financialIdentificationNumber is optional in the request body. If a
- *    field is optional in request body, it can be omitted in the hash,
- *    only fields that are required in request body would automatically
- *    be required in the hash if part of the hash parameters."
- *
- * A field is only concatenated into the hash string if it is actually
- * present (non-null) in the outgoing request body. The ordered field
- * list per endpoint lives in PagaHashFields, not here.
- */
 class PagaHasher
 {
     public static function buildHash(array $orderedFields, array $payload, string $hashKey): string
@@ -30,12 +17,6 @@ class PagaHasher
         return hash('sha512', implode('', $parts));
     }
 
-    /**
-     * Verifies an INBOUND callback using Paga's dynamic x-paga-hash /
-     * x-paga-hash-parameters header mechanism (confirmed by Paga support
-     * as the current, correct approach for Persistent Payment Account
-     * callbacks).
-     */
     public static function verifyCallback(array $headers, array $payload, string $hashKey): bool
     {
         $providedHash = $headers['x-paga-hash'] ?? null;
@@ -56,9 +37,7 @@ class PagaHasher
         }
         $parts[] = $hashKey;
 
-        $computed = hash('sha512', implode('', $parts));
-
-        return hash_equals($computed, $providedHash);
+        return hash_equals(hash('sha512', implode('', $parts)), $providedHash);
     }
 
     private static function fieldPresent(array $payload, string $field): bool

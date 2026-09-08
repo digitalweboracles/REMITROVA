@@ -17,14 +17,10 @@ class PagaPersistentAccountWebhookController extends Controller
         $headers = $this->lowercaseHeaders($request->headers->all());
         $payload = $request->json()->all();
 
-        $hashKey = config('paga.collect.hash_key');
-        $verified = PagaHasher::verifyCallback($headers, $payload, $hashKey);
+        $verified = PagaHasher::verifyCallback($headers, $payload, config('paga.collect.hash_key'));
 
         if (!$verified) {
-            Log::warning('Paga webhook failed hash verification', [
-                'headers' => $headers,
-                'payload' => $payload,
-            ]);
+            Log::warning('Paga webhook failed hash verification', ['headers' => $headers, 'payload' => $payload]);
             return response()->noContent();
         }
 
@@ -40,9 +36,7 @@ class PagaPersistentAccountWebhookController extends Controller
                 'hash_verified' => true,
             ]);
         } catch (\Illuminate\Database\QueryException $e) {
-            Log::info('Duplicate Paga webhook received, already recorded', [
-                'provider_reference' => $providerReference,
-            ]);
+            Log::info('Duplicate Paga webhook received, already recorded', ['provider_reference' => $providerReference]);
             return response()->noContent();
         }
 

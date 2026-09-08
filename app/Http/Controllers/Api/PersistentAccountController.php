@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PersistentAccount;
-use App\Services\Payments\Paga\ProvisionsPersistentAccounts;
+use App\Services\Payments\ProvisionsPersistentAccounts;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -18,10 +18,7 @@ class PersistentAccountController extends Controller
     {
         $customer = $request->user();
 
-        $account = $this->provisioner->createForCustomer(
-            $customer,
-            route('webhooks.paga.persistent-account')
-        );
+        $account = $this->provisioner->createForCustomer($customer, route('webhooks.paga.persistent-account'));
 
         return response()->json([
             'status' => $account->status,

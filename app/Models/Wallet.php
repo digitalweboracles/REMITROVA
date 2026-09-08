@@ -14,9 +14,7 @@ class Wallet extends Model
 
     protected function casts(): array
     {
-        return [
-            'balance' => 'decimal:4',
-        ];
+        return ['balance' => 'decimal:4'];
     }
 
     public function customer()
@@ -31,22 +29,16 @@ class Wallet extends Model
 
     public function creditAtomically(string $amount): void
     {
-        DB::table('wallets')
-            ->where('id', $this->id)
-            ->lockForUpdate()
-            ->increment('balance', $amount);
-
+        DB::table('wallets')->where('id', $this->id)->lockForUpdate()->increment('balance', $amount);
         $this->refresh();
     }
 
     public function debitAtomically(string $amount): void
     {
         $locked = DB::table('wallets')->where('id', $this->id)->lockForUpdate()->first();
-
         if (bccomp($locked->balance, $amount, 4) < 0) {
             throw new \RuntimeException("Insufficient balance on wallet {$this->id}: has {$locked->balance}, needs {$amount}.");
         }
-
         DB::table('wallets')->where('id', $this->id)->decrement('balance', $amount);
         $this->refresh();
     }

@@ -9,15 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-/**
- * Real registration/login for the demo frontend to connect to.
- *
- * Uses Sanctum's token auth (not session/cookie auth), since the
- * frontend is hosted on a completely different domain (edge.one) than
- * this API (railway.app) — token-in-header is the correct fit for
- * that, not Sanctum's SPA cookie mode, which assumes same top-level
- * domain or a much more involved CORS/cookie setup.
- */
 class AuthController extends Controller
 {
     public function register(Request $request): JsonResponse
@@ -40,18 +31,11 @@ class AuthController extends Controller
             'country' => $request->input('country'),
         ]);
 
-        // NGN wallet only — Static NUBAN (the only receiving rail built
-        // so far) attaches to this. A PLN wallet isn't created here
-        // since there's no working rail behind it yet; creating one
-        // would just be a number with nothing real able to move it.
         $customer->wallets()->create(['currency' => 'NGN', 'balance' => 0]);
 
         $token = $customer->createToken('demo-frontend')->plainTextToken;
 
-        return response()->json([
-            'token' => $token,
-            'customer' => $this->customerPayload($customer),
-        ], 201);
+        return response()->json(['token' => $token, 'customer' => $this->customerPayload($customer)], 201);
     }
 
     public function login(Request $request): JsonResponse
@@ -73,10 +57,7 @@ class AuthController extends Controller
 
         $token = $customer->createToken('demo-frontend')->plainTextToken;
 
-        return response()->json([
-            'token' => $token,
-            'customer' => $this->customerPayload($customer),
-        ]);
+        return response()->json(['token' => $token, 'customer' => $this->customerPayload($customer)]);
     }
 
     public function me(Request $request): JsonResponse
@@ -87,7 +68,6 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
-
         return response()->json(['message' => 'Logged out.']);
     }
 

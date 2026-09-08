@@ -17,11 +17,7 @@ class LedgerEntry extends Model
 
     protected function casts(): array
     {
-        return [
-            'amount' => 'decimal:4',
-            'metadata' => 'array',
-            'completed_at' => 'datetime',
-        ];
+        return ['amount' => 'decimal:4', 'metadata' => 'array', 'completed_at' => 'datetime'];
     }
 
     public function wallet()
@@ -34,7 +30,6 @@ class LedgerEntry extends Model
         if ($this->exists && $this->getOriginal('status') === 'completed' && $this->isDirty(['amount', 'direction', 'wallet_id'])) {
             throw new \RuntimeException('Refusing to mutate a completed ledger entry — create a new entry instead.');
         }
-
         return parent::save($options);
     }
 }

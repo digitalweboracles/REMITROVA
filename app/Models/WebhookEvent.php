@@ -16,11 +16,6 @@ class WebhookEvent extends Model
 
     protected function casts(): array
     {
-        return [
-            'headers' => 'array',
-            'payload' => 'array',
-            'hash_verified' => 'boolean',
-            'processed_at' => 'datetime',
-        ];
+        return ['headers' => 'array', 'payload' => 'array', 'hash_verified' => 'boolean', 'processed_at' => 'datetime'];
     }
 }

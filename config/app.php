@@ -11,11 +11,6 @@ return [
     'faker_locale' => 'en_US',
     'key' => env('APP_KEY'),
     'cipher' => 'AES-256-CBC',
-    'maintenance' => [
-        'driver' => 'file',
-    ],
-
-    // TEMPORARY — see routes/web.php's /dev/* routes.
-    // Remove this along with those routes before going near production.
+    'maintenance' => ['driver' => 'file'],
     'dev_seed_key' => env('DEV_SEED_KEY'),
 ];

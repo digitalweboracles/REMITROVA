@@ -14,9 +14,6 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->prepend(HandleCors::class);
-
-        // Paga's server calls our webhook directly, not a browser with a
-        // session, so it can never carry a CSRF token.
         $middleware->validateCsrfTokens(except: [
             'api/webhooks/paga/persistent-account',
         ]);

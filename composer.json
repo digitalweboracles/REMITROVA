@@ -1,7 +1,7 @@
 {
     "name": "remitrova/backend",
     "type": "project",
-    "description": "RemitRova transactional backend — Poland <-> Nigeria payments, Paga integration.",
+    "description": "RemitRova transactional backend — Poland <-> Nigeria payments, multi-provider (Paga, HitchPay) with automatic failover.",
     "license": "proprietary",
     "require": {
         "php": "^8.2",

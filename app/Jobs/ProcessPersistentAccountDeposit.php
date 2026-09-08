@@ -28,56 +28,37 @@ class ProcessPersistentAccountDeposit implements ShouldQueue
     public function handle(): void
     {
         $event = WebhookEvent::find($this->webhookEventId);
-
-        if (!$event) {
-            Log::error('ProcessPersistentAccountDeposit: webhook event not found', ['id' => $this->webhookEventId]);
-            return;
-        }
-
-        if ($event->processed_at !== null) {
+        if (!$event || $event->processed_at !== null) {
             return;
         }
 
         $payload = $event->payload;
-
         $accountNumber = $payload['accountNumber'] ?? null;
         $rawAmount = $payload['amount'] ?? null;
         $transactionReference = $payload['transactionReference'] ?? $payload['referenceNumber'] ?? null;
 
         if (!$accountNumber || $rawAmount === null || !$transactionReference) {
-            $event->update([
-                'processing_error' => 'Missing accountNumber, amount, or transactionReference in payload.',
-            ]);
-            Log::error('Paga deposit webhook missing required fields', ['payload' => $payload]);
+            $event->update(['processing_error' => 'Missing accountNumber, amount, or transactionReference in payload.']);
             return;
         }
 
         $amount = str_replace(',', '', (string) $rawAmount);
-
         if (!is_numeric($amount) || bccomp($amount, '0', 4) <= 0) {
             $event->update(['processing_error' => "Invalid or non-positive amount: {$rawAmount}"]);
-            Log::error('Paga deposit webhook had an invalid amount', ['payload' => $payload]);
             return;
         }
 
-        $account = PersistentAccount::where('account_identifier', $accountNumber)
-            ->where('status', 'active')
-            ->first();
-
+        $account = PersistentAccount::where('account_identifier', $accountNumber)->where('status', 'active')->first();
         if (!$account) {
-            $event->update([
-                'processing_error' => "No active persistent_account found for account_identifier {$accountNumber}.",
-            ]);
-            Log::error('Paga deposit webhook referenced an unknown account', ['account_number' => $accountNumber]);
+            $event->update(['processing_error' => "No active persistent_account found for account_identifier {$accountNumber}."]);
             return;
         }
 
-        $idempotencyKey = "paga_deposit:{$transactionReference}";
+        $idempotencyKey = "deposit:{$transactionReference}";
 
         try {
             DB::transaction(function () use ($account, $amount, $idempotencyKey, $transactionReference, $payload) {
                 $wallet = $account->wallet()->lockForUpdate()->first();
-
                 LedgerEntry::create([
                     'wallet_id' => $wallet->id,
                     'direction' => 'credit',
@@ -85,39 +66,25 @@ class ProcessPersistentAccountDeposit implements ShouldQueue
                     'currency' => $wallet->currency,
                     'status' => 'completed',
                     'idempotency_key' => $idempotencyKey,
-                    'provider' => 'paga',
+                    'provider' => $account->provider,
                     'provider_reference' => $transactionReference,
                     'type' => 'nuban_deposit',
                     'description' => "Incoming deposit to {$wallet->currency} NUBAN",
                     'metadata' => $payload,
                     'completed_at' => now(),
                 ]);
-
                 $wallet->creditAtomically($amount);
             });
         } catch (QueryException $e) {
-            Log::info('Duplicate deposit processing prevented by idempotency key', [
-                'idempotency_key' => $idempotencyKey,
-            ]);
+            Log::info('Duplicate deposit processing prevented by idempotency key', ['idempotency_key' => $idempotencyKey]);
         }
 
         $event->update(['processed_at' => now()]);
-
-        // TODO (not yet implemented): trigger the NGN<->PLN conversion +
-        // credit to the customer's OTHER wallet, matching the investor
-        // demo's behavior. Needs a live FX rate source and its own
-        // ledger entries — deliberately scoped out of this webhook pass.
     }
 
     public function failed(\Throwable $exception): void
     {
-        Log::error('ProcessPersistentAccountDeposit permanently failed', [
-            'webhook_event_id' => $this->webhookEventId,
-            'error' => $exception->getMessage(),
-        ]);
-
-        WebhookEvent::where('id', $this->webhookEventId)->update([
-            'processing_error' => $exception->getMessage(),
-        ]);
+        Log::error('ProcessPersistentAccountDeposit permanently failed', ['webhook_event_id' => $this->webhookEventId, 'error' => $exception->getMessage()]);
+        WebhookEvent::where('id', $this->webhookEventId)->update(['processing_error' => $exception->getMessage()]);
     }
 }
