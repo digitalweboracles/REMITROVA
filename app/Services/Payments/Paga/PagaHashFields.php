@@ -22,8 +22,8 @@ class PagaHashFields
     // creditBankAccountNumber, callbackUrl — no phone/name fields at
     // all) is the next thing to try.
     public const REGISTER_PERSISTENT_ACCOUNT = [
-        'referenceNumber', 'phoneNumber', 'accountName', 'accountReference',
-        'financialIdentificationNumber', 'creditBankId', 'creditBankAccountNumber', 'callbackUrl',
+        'referenceNumber', 'accountReference', 'financialIdentificationNumber',
+        'creditBankId', 'creditBankAccountNumber', 'callbackUrl',
     ];
 
     public const UPDATE_PERSISTENT_ACCOUNT = [
