@@ -18,9 +18,10 @@ class Customer extends Authenticatable
         'date_of_birth', 'nationality', 'profile_image_url',
         'address_house_no', 'address_street', 'address_city',
         'address_state', 'address_postal_code',
+        'hitchpay_customer_uuid', 'bvn',
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'bvn'];
 
     protected function casts(): array
     {
@@ -29,6 +30,7 @@ class Customer extends Authenticatable
             'kyc_verified_at' => 'datetime',
             'password' => 'hashed',
             'date_of_birth' => 'date',
+            'bvn' => 'encrypted',
         ];
     }
 

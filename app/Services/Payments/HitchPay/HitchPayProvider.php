@@ -41,36 +41,45 @@ class HitchPayProvider implements PersistentAccountProviderInterface
             );
         }
 
-        [$firstName, $lastName] = $this->splitName($customer->name);
-
-        try {
-            $enrollResponse = $this->client->enrollCustomer([
-                'customerid' => 'RR-' . $customer->id,
-                'email' => $customer->email,
-                'phone' => $customer->phone,
-                'firstname' => $firstName,
-                'lastname' => $lastName,
-                'dob' => $customer->date_of_birth->format('d-m-Y'),
-                'nationality' => $customer->nationality,
-                'image' => $customer->profile_image_url,
-                'address' => [
-                    'house_no' => (int) $customer->address_house_no,
-                    'street' => $customer->address_street,
-                    'city' => $customer->address_city,
-                    'state' => $customer->address_state,
-                    'postal_code' => $customer->address_postal_code,
-                    'country' => $customer->country, // already PL/NG — our enum matches ISO 3166-1 alpha-2 directly
-                ],
-            ]);
-        } catch (\Throwable $e) {
-            throw new ProviderRequestFailedException('hitchpay', 'Enrollment failed: ' . $e->getMessage());
-        }
-
-        $customerUuid = $enrollResponse['data']['uuid'] ?? null;
+        $customerUuid = $customer->hitchpay_customer_uuid;
 
         if (!$customerUuid) {
-            throw new ProviderRequestFailedException('hitchpay', 'Enrollment succeeded but response did not include a uuid.', ['raw_response' => $enrollResponse]);
+            [$firstName, $lastName] = $this->splitName($customer->name);
+
+            try {
+                $enrollResponse = $this->client->enrollCustomer([
+                    'customerid' => 'RR-' . $customer->id,
+                    'email' => $customer->email,
+                    'phone' => $customer->phone,
+                    'firstname' => $firstName,
+                    'lastname' => $lastName,
+                    'dob' => $customer->date_of_birth->format('d-m-Y'),
+                    'nationality' => $customer->nationality,
+                    'image' => $customer->profile_image_url,
+                    'address' => [
+                        'house_no' => (int) $customer->address_house_no,
+                        'street' => $customer->address_street,
+                        'city' => $customer->address_city,
+                        'state' => $customer->address_state,
+                        'postal_code' => $customer->address_postal_code,
+                        'country' => $customer->country,
+                    ],
+                ]);
+            } catch (\Throwable $e) {
+                throw new ProviderRequestFailedException('hitchpay', 'Enrollment failed: ' . $e->getMessage());
+            }
+
+            $customerUuid = $enrollResponse['data']['uuid'] ?? null;
+
+            if (!$customerUuid) {
+                throw new ProviderRequestFailedException('hitchpay', 'Enrollment succeeded but response did not include a uuid.', ['raw_response' => $enrollResponse]);
+            }
+
+            // Remember it so we never enroll (and hit DUPLICATE_REQUEST) again.
+            $customer->update(['hitchpay_customer_uuid' => $customerUuid]);
         }
+
+        $this->ensureKycApproved($customer, $customerUuid);
 
         try {
             $accountResponse = $this->client->generateBankAccount($customerUuid, 'NGN');
@@ -91,6 +100,47 @@ class HitchPayProvider implements PersistentAccountProviderInterface
             bankName: $accountData['bank_name'] ?? 'HitchPay',
             rawResponse: $accountResponse,
         );
+    }
+
+    /**
+     * HitchPay refuses to issue an account until the customer's KYC is
+     * approved. For Nigerian customers that means a BVN lookup, which is
+     * immediate. We only ever send a BVN the customer actually provided.
+     */
+    private function ensureKycApproved(Customer $customer, string $customerUuid): void
+    {
+        try {
+            $status = $this->client->getCustomer($customerUuid)['data']['kyc_status'] ?? null;
+        } catch (\Throwable $e) {
+            throw new ProviderRequestFailedException('hitchpay', 'Could not read KYC status: ' . $e->getMessage());
+        }
+
+        if ($status === 'approved') {
+            return;
+        }
+
+        if (!filled($customer->bvn)) {
+            throw new ProviderRequestFailedException('hitchpay', "Customer KYC status is '{$status}' and no BVN is on file. A BVN must be collected from the customer before HitchPay will issue an account.");
+        }
+
+        try {
+            $this->client->submitKyc($customerUuid, 'bvn', $customer->bvn);
+        } catch (\Throwable $e) {
+            // Already pending/approved is fine; anything else is a real failure.
+            if (!str_contains($e->getMessage(), 'DUPLICATE_REQUEST') && !str_contains($e->getMessage(), 'CONFLICT')) {
+                throw new ProviderRequestFailedException('hitchpay', 'BVN submission failed: ' . $e->getMessage());
+            }
+        }
+
+        try {
+            $status = $this->client->getCustomer($customerUuid)['data']['kyc_status'] ?? null;
+        } catch (\Throwable $e) {
+            throw new ProviderRequestFailedException('hitchpay', 'Could not re-read KYC status: ' . $e->getMessage());
+        }
+
+        if ($status !== 'approved') {
+            throw new ProviderRequestFailedException('hitchpay', "KYC is not approved yet (status: '{$status}'). Try again shortly, or check the BVN details match.");
+        }
     }
 
     private function splitName(string $fullName): array

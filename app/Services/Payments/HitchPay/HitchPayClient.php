@@ -102,11 +102,40 @@ class HitchPayClient
         return $this->post('/v1/customer/generate-account', $payload);
     }
 
+    /**
+     * Submits one KYC item for an enrolled customer. For 'bvn' HitchPay
+     * does an immediate lookup and approves/rejects the customer.
+     */
+    public function submitKyc(string $customerUuid, string $type, string $value): array
+    {
+        return $this->post("/v1/customer/{$customerUuid}/kyc", ['type' => $type, 'value' => $value]);
+    }
+
+    public function getCustomer(string $customerUuid): array
+    {
+        $url = rtrim($this->baseUrl, '/') . "/v1/customer/{$customerUuid}";
+
+        $response = Http::withToken($this->getAccessToken())->acceptJson()->timeout(20)->get($url);
+
+        Log::info('HitchPay API response', ['url' => $url, 'status' => $response->status(), 'body' => $response->body()]);
+
+        if ($response->failed()) {
+            throw new RuntimeException("HitchPay API call to /v1/customer/{$customerUuid} failed with HTTP {$response->status()}: {$response->body()}");
+        }
+
+        return $response->json() ?? [];
+    }
+
     private function post(string $path, array $payload): array
     {
         $url = rtrim($this->baseUrl, '/') . $path;
 
-        Log::info('HitchPay API request', ['url' => $url, 'payload' => $payload]);
+        // Never write identity numbers (BVN/NIN) to the logs.
+        $loggable = $payload;
+        if (isset($loggable['value'])) {
+            $loggable['value'] = '[redacted]';
+        }
+        Log::info('HitchPay API request', ['url' => $url, 'payload' => $loggable]);
 
         $response = Http::withToken($this->getAccessToken())
             ->acceptJson()

@@ -63,6 +63,15 @@ Route::get('/dev/seed-test-customer', function (Request $request) {
         ]);
     }
 
+    // Live-test helpers, driven by Railway variables (never by the URL, so
+    // a BVN never lands in access logs). Remove the variables afterwards.
+    if (!$customer->hitchpay_customer_uuid && config('hitchpay.test_customer_uuid')) {
+        $customer->update(['hitchpay_customer_uuid' => config('hitchpay.test_customer_uuid')]);
+    }
+    if (config('hitchpay.test_bvn')) {
+        $customer->update(['bvn' => config('hitchpay.test_bvn')]);
+    }
+
     $wallet = $customer->wallets()->firstOrCreate(['currency' => 'NGN'], ['balance' => 0]);
 
     return response()->json(['customer_id' => $customer->id, 'wallet_id' => $wallet->id, 'email' => $customer->email]);

@@ -10,4 +10,8 @@ return [
     'client_id' => env('HITCHPAY_CLIENT_ID'),
     'client_secret' => env('HITCHPAY_CLIENT_SECRET'),
 
+    // Dev-route helpers only (read via config so they survive config:cache).
+    'test_customer_uuid' => env('HITCHPAY_TEST_CUSTOMER_UUID'),
+    'test_bvn' => env('HITCHPAY_TEST_BVN'),
+
 ];
