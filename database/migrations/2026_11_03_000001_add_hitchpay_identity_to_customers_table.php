@@ -13,16 +13,28 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('customers', function (Blueprint $table) {
-            $table->string('hitchpay_customer_uuid')->nullable()->after('address_postal_code');
-            $table->text('bvn')->nullable()->after('hitchpay_customer_uuid');
-        });
+        // Guarded: some environments already have one or both columns.
+        if (!Schema::hasColumn('customers', 'hitchpay_customer_uuid')) {
+            Schema::table('customers', function (Blueprint $table) {
+                $table->string('hitchpay_customer_uuid')->nullable();
+            });
+        }
+
+        if (!Schema::hasColumn('customers', 'bvn')) {
+            Schema::table('customers', function (Blueprint $table) {
+                $table->text('bvn')->nullable();
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('customers', function (Blueprint $table) {
-            $table->dropColumn(['hitchpay_customer_uuid', 'bvn']);
-        });
+        foreach (['hitchpay_customer_uuid', 'bvn'] as $column) {
+            if (Schema::hasColumn('customers', $column)) {
+                Schema::table('customers', function (Blueprint $table) use ($column) {
+                    $table->dropColumn($column);
+                });
+            }
+        }
     }
 };
