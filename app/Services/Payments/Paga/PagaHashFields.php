@@ -9,18 +9,16 @@ class PagaHashFields
         'creditBankId', 'creditBankAccountNumber', 'callbackUrl',
     ];
 
-    // UPDATED 2026-09-08 — found via direct search of Paga's current
-    // published docs (developer-docs.paga.com/docs/persistent-wallet-account),
-    // not from support correspondence this time. That page is internally
-    // inconsistent: the prose describes one field list, the actual JS
-    // code sample on the same page describes a different one. This uses
-    // the CODE SAMPLE's order (firstName/lastName omitted entirely;
-    // phoneNumber and accountName come BEFORE accountReference) since
-    // code samples get copy-pasted/run far more than prose gets
-    // proofread. If this doesn't resolve the 401, the prose version
-    // (referenceNumber, accountReference, creditBankId,
-    // creditBankAccountNumber, callbackUrl — no phone/name fields at
-    // all) is the next thing to try.
+    // UPDATED 2026-09-09 — this is now sourced directly from Paga's
+    // current, dated (updated 14 days prior to this check) official
+    // documentation page for this EXACT endpoint:
+    // developer-docs.paga.com/docs/operations-1#6-create-persistent-payment-identifier
+    // — not a guess, not a secondhand support example, not a different
+    // page's code sample. This is the authoritative source, and
+    // critically: this exact combination (correct /register endpoint
+    // name + THIS formula) had never actually been tested before —
+    // every prior attempt paired either the wrong endpoint name with
+    // this formula, or the right endpoint name with a guessed one.
     public const REGISTER_PERSISTENT_ACCOUNT = [
         'referenceNumber', 'accountReference', 'financialIdentificationNumber',
         'creditBankId', 'creditBankAccountNumber', 'callbackUrl',

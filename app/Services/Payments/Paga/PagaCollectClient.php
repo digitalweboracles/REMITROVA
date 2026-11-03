@@ -19,7 +19,7 @@ class PagaCollectClient
 
     public function createPersistentAccount(array $data): array
     {
-        $referenceNumber = $data['referenceNumber'] ?? ('RR' . strtoupper(Str::random(20))); // shortened per Paga support, 2026-09-09
+        $referenceNumber = $data['referenceNumber'] ?? (string) Str::uuid();
 
         $payload = array_filter([
             'referenceNumber' => $referenceNumber,
