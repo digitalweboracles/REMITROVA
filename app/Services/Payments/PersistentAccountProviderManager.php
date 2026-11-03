@@ -53,6 +53,10 @@ class PersistentAccountProviderManager
                 }
 
                 return $result;
+            } catch (KycNotApprovedException $e) {
+                // Identity check pending/rejected: the provider is fine, so don't trip its circuit breaker.
+                Log::info("Provider '{$name}' waiting on customer KYC.", ['error' => $e->getMessage()]);
+                $lastException = $e;
             } catch (ProviderRequestFailedException $e) {
                 Log::warning("Provider '{$name}' failed, trying next available provider if any.", [
                     'error' => $e->getMessage(),
@@ -60,6 +64,10 @@ class PersistentAccountProviderManager
                 $this->health->recordFailure($name);
                 $lastException = $e;
             }
+        }
+
+        if ($lastException instanceof KycNotApprovedException) {
+            throw $lastException;
         }
 
         $triedList = $attempted ? implode(', ', $attempted) : 'none (all providers currently marked down)';

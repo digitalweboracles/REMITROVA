@@ -225,10 +225,53 @@
       <div class="nuban-bank" id="receiveBankName">—</div>
       <button class="btn btn-ghost copy-btn" id="copyAccountBtn" onclick="copyAccountNumber()" data-i18n="copy_number_btn" style="display:none;">Copy number</button>
     </div>
+    <div class="verify-box" id="receiveVerifying" style="display:none;">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="verify-title" id="receiveVerifyTitle"></div>
+      <div class="hint-text" id="receiveVerifyMsg"></div>
+    </div>
     <div class="provision-box">
       <div class="error-text" id="nubanError"></div>
       <button class="btn btn-primary" id="provisionNubanBtn" onclick="provisionNuban()">Get my NUBAN</button>
     </div>
+  </div>
+</div>
+
+
+<div class="sheet-backdrop" id="kycBackdrop" onclick="closeKycSheet()"></div>
+<div class="sheet" id="kycSheet" role="dialog" aria-modal="true" aria-labelledby="kycTitle">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2 id="kycTitle" data-i18n="kyc_title">Verify your identity</h2>
+    <button class="sheet-close" onclick="closeKycSheet()" aria-label="Close">✕</button>
+  </div>
+  <div class="sheet-body">
+    <p class="hint-text" data-i18n="kyc_intro" style="margin-bottom:16px;">Nigerian banking rules require us to verify who you are before issuing an account number. Enter your details exactly as they appear on your BVN record.</p>
+    <div class="error-text" id="kycNotice"></div>
+    <form id="kycForm" onsubmit="return submitKyc(event)" novalidate>
+      <div class="field-row">
+        <div class="field"><label for="kycFirst" data-i18n="kyc_first_name">First name (as on BVN)</label><input id="kycFirst" name="first_name" autocomplete="given-name" required></div>
+        <div class="field"><label for="kycLast" data-i18n="kyc_last_name">Last name (as on BVN)</label><input id="kycLast" name="last_name" autocomplete="family-name" required></div>
+      </div>
+      <div class="field"><label for="kycBvn" data-i18n="kyc_bvn">BVN (11 digits)</label><input id="kycBvn" name="bvn" inputmode="numeric" pattern="[0-9]*" maxlength="11" autocomplete="off" required>
+        <div class="hint-text" data-i18n="kyc_bvn_hint" style="margin-top:6px;">Dial *565*0# on your phone to see your BVN. We never see your bank balance or accounts.</div></div>
+      <div class="field"><label for="kycDob" data-i18n="kyc_dob">Date of birth</label><input id="kycDob" name="date_of_birth" type="date" required></div>
+      <div class="field"><label for="kycPhone" data-i18n="kyc_phone">Nigerian phone number</label><input id="kycPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="08012345678" required></div>
+      <div class="field-row">
+        <div class="field field-narrow"><label for="kycHouse" data-i18n="kyc_house">House no.</label><input id="kycHouse" name="address_house_no" required></div>
+        <div class="field"><label for="kycStreet" data-i18n="kyc_street">Street</label><input id="kycStreet" name="address_street" autocomplete="address-line1" required></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="kycCity" data-i18n="kyc_city">City</label><input id="kycCity" name="address_city" autocomplete="address-level2" required></div>
+        <div class="field"><label for="kycState" data-i18n="kyc_state">State</label><input id="kycState" name="address_state" autocomplete="address-level1" required></div>
+      </div>
+      <div class="field"><label for="kycPostal" data-i18n="kyc_postal">Postal code</label><input id="kycPostal" name="address_postal_code" inputmode="numeric" autocomplete="postal-code" required></div>
+      <div class="field"><label for="kycPhoto" data-i18n="kyc_photo">Photo of your face</label><input id="kycPhoto" name="photo" type="file" accept="image/png,image/jpeg" required>
+        <div class="hint-text" data-i18n="kyc_photo_hint" style="margin-top:6px;">A clear, front-facing photo. JPG or PNG, up to 4 MB.</div></div>
+      <label class="consent-row" for="kycConsent"><input id="kycConsent" name="consent" type="checkbox" required><span data-i18n="kyc_consent">I confirm these details are mine and agree that RemitRova may send them, including my BVN, to its licensed payment partner to verify my identity and open my account.</span></label>
+      <div class="error-text" id="kycError"></div>
+      <button class="btn btn-primary" type="submit" id="kycSubmitBtn" data-i18n="kyc_submit">Verify and get my NUBAN</button>
+    </form>
   </div>
 </div>
 

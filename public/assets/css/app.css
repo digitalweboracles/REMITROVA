@@ -98,7 +98,7 @@ a{color:inherit;} button{font-family:inherit; cursor:pointer;} input,select{font
 .sheet-handle{width:38px; height:5px; background:var(--line-strong); border-radius:100px; margin:13px auto 4px;}
 .sheet-head{display:flex; align-items:center; justify-content:space-between; padding:16px 20px 6px;}
 .sheet-head h2{font-family:var(--font-display); font-size:20px; font-weight:700; margin:0;}
-.sheet-close{width:34px; height:34px; border-radius:50%; background:var(--card); border:1.5px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--ink-faint);}
+.sheet-close{width:44px; height:44px; border-radius:50%; background:var(--card); border:1.5px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--ink-faint);}
 .sheet-body{padding:16px 20px 8px;}
 
 .nuban-card{background:var(--card); border:2px dashed var(--line-strong); border-radius:24px; padding:26px; text-align:center;}
@@ -196,3 +196,17 @@ a{color:inherit;} button{font-family:inherit; cursor:pointer;} input,select{font
   .wallets-row{margin:0 0 24px; padding:2px 4px 8px 0;}
   .wallet-spacer{flex:0 0 6px; width:6px;}
 }
+
+/* ---- KYC sheet ---- */
+.field-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.field-row .field-narrow{grid-column:auto;}
+@media (max-width:420px){.field-row{grid-template-columns:1fr;}}
+.field input[type=file]{padding:11px 12px; font-size:14px; min-height:48px;}
+.field input[type=date]{min-height:48px;}
+.consent-row{display:flex; gap:12px; align-items:flex-start; font-size:13px; line-height:1.5; color:var(--ink-dim); margin:4px 0 16px; cursor:pointer;}
+.consent-row input{width:24px; height:24px; min-width:24px; margin-top:1px; accent-color:var(--ng-green);}
+.verify-box{text-align:center; padding:18px 8px 6px;}
+.verify-title{font-weight:800; font-size:16px; margin:12px 0 4px;}
+.spinner{width:34px; height:34px; border-radius:50%; border:4px solid var(--line-strong); border-top-color:var(--ng-green); margin:0 auto; animation:rr-spin .9s linear infinite;}
+@keyframes rr-spin{to{transform:rotate(360deg);}}
+@media (prefers-reduced-motion:reduce){.spinner{animation:none;}}

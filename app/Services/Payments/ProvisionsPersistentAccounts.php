@@ -39,18 +39,30 @@ class ProvisionsPersistentAccounts
 
         $accountReference = 'RR' . strtoupper(Str::random(14)); // 16 chars — within Paga's confirmed 11-30 char requirement
 
-        $record = PersistentAccount::create([
-            'customer_id' => $customer->id,
-            'wallet_id' => $wallet->id,
-            'provider' => 'pending',
-            'account_reference' => $accountReference,
-            'status' => 'pending',
-        ]);
+        // Re-use an earlier unfinished attempt instead of piling up a new row
+        // on every status check while KYC is still being verified.
+        $record = PersistentAccount::where('customer_id', $customer->id)
+            ->whereIn('status', ['pending', 'failed'])
+            ->latest('id')
+            ->first();
+
+        if ($record) {
+            $record->update(['status' => 'pending', 'failure_reason' => null]);
+            $accountReference = $record->account_reference;
+        } else {
+            $record = PersistentAccount::create([
+                'customer_id' => $customer->id,
+                'wallet_id' => $wallet->id,
+                'provider' => 'pending',
+                'account_reference' => $accountReference,
+                'status' => 'pending',
+            ]);
+        }
 
         try {
             $result = $this->providerManager->createPersistentAccount($customer, $accountReference, $callbackUrl);
         } catch (\Throwable $e) {
-            $record->update(['status' => 'failed', 'failure_reason' => $e->getMessage()]);
+            $record->update(['status' => 'failed', 'failure_reason' => trim($e->getMessage() . ' ' . ($e->getPrevious()?->getMessage() ?? ''))]);
             throw $e;
         }
 

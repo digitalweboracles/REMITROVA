@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PersistentAccount;
+use App\Services\Payments\KycNotApprovedException;
 use App\Services\Payments\ProvisionsPersistentAccounts;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,11 @@ class PersistentAccountController extends Controller
     {
         $customer = $request->user();
 
-        $account = $this->provisioner->createForCustomer($customer, route('webhooks.paga.persistent-account'));
+        try {
+            $account = $this->provisioner->createForCustomer($customer, route('webhooks.paga.persistent-account'));
+        } catch (KycNotApprovedException $e) {
+            return response()->json(['message' => 'Identity verification is required first. Use /api/kyc.', 'stage' => $e->rejected ? 'rejected' : 'needs_kyc'], 409);
+        }
 
         return response()->json([
             'status' => $account->status,

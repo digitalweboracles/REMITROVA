@@ -17,7 +17,8 @@ function clearAuth() {
 }
 
 async function apiFetch(path, options = {}) {
-  const headers = Object.assign({ 'Content-Type': 'application/json', 'Accept': 'application/json' }, options.headers || {});
+  const isForm = typeof FormData !== 'undefined' && options.body instanceof FormData;
+  const headers = Object.assign(isForm ? { 'Accept': 'application/json' } : { 'Content-Type': 'application/json', 'Accept': 'application/json' }, options.headers || {});
   if (auth.token) headers['Authorization'] = 'Bearer ' + auth.token;
 
   let res;
@@ -276,6 +277,7 @@ function openReceiveSheet() {
   document.getElementById('receiveSheetHint').textContent = t('receive_hint_ngn');
   document.getElementById('receiveAccountLabel').textContent = t('nuban_label');
   document.getElementById('nubanError').classList.remove('show');
+  document.getElementById('receiveVerifying').style.display = 'none';
 
   if (c.nuban) {
     document.getElementById('receiveAccountNumber').textContent = c.nuban;
@@ -296,6 +298,7 @@ function openReceiveSheet() {
   document.body.style.overflow = 'hidden';
 }
 function closeReceiveSheet() {
+  stopKycPolling();
   document.getElementById('receiveBackdrop').classList.remove('open');
   document.getElementById('receiveSheet').classList.remove('open');
   document.body.style.overflow = '';
@@ -306,25 +309,159 @@ function copyAccountNumber() {
   showToast(t('toast_copied'));
 }
 
-async function provisionNuban() {
-  const btn = document.getElementById('provisionNubanBtn');
-  const errEl = document.getElementById('nubanError');
-  errEl.classList.remove('show');
-  btn.disabled = true;
-  btn.textContent = t('please_wait');
+let kycPollTimer = null;
+let kycPollCount = 0;
 
-  try {
-    const data = await apiFetch('/api/accounts/nuban', { method: 'POST' });
-    auth.customer.nuban = data.account_number;
+function stopKycPolling() {
+  if (kycPollTimer) { clearInterval(kycPollTimer); kycPollTimer = null; }
+}
+
+function showReceiveError(message) {
+  const errEl = document.getElementById('nubanError');
+  errEl.textContent = message;
+  errEl.classList.add('show');
+}
+
+function setProvisionBusy(busy) {
+  const btn = document.getElementById('provisionNubanBtn');
+  btn.disabled = busy;
+  btn.textContent = busy ? t('please_wait') : t('get_my_nuban_btn');
+}
+
+/* Asks the server where this customer is in the identity check and reacts. */
+async function handleNubanStatus(status, { fromPoll = false } = {}) {
+  if (status.stage === 'active') {
+    stopKycPolling();
+    auth.customer.nuban = status.account_number;
     saveAuth();
+    renderAll();
+    closeKycSheet();
     showToast(t('toast_nuban_ready'));
     openReceiveSheet();
+    return;
+  }
+
+  if (status.stage === 'needs_kyc' || status.stage === 'rejected') {
+    stopKycPolling();
+    closeReceiveSheet();
+    openKycSheet(status.stage === 'rejected' ? t('kyc_rejected_msg') : '');
+    return;
+  }
+
+  if (status.stage === 'verifying') {
+    showVerifying();
+    return;
+  }
+
+  // error
+  stopKycPolling();
+  document.getElementById('receiveVerifying').style.display = 'none';
+  setProvisionBusy(false);
+  showReceiveError(t('kyc_error_msg'));
+}
+
+function showVerifying() {
+  document.getElementById('provisionNubanBtn').style.display = 'none';
+  document.getElementById('nubanError').classList.remove('show');
+  document.getElementById('receiveVerifying').style.display = '';
+  document.getElementById('receiveVerifyTitle').textContent = t('kyc_verifying_title');
+  document.getElementById('receiveVerifyMsg').textContent = t('kyc_verifying_msg');
+  if (!kycPollTimer) {
+    kycPollCount = 0;
+    kycPollTimer = setInterval(pollKycStatus, 6000);
+  }
+  if (!document.getElementById('receiveSheet').classList.contains('open')) {
+    document.getElementById('receiveBackdrop').classList.add('open');
+    document.getElementById('receiveSheet').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+async function pollKycStatus() {
+  kycPollCount += 1;
+  try {
+    const status = await apiFetch('/api/kyc/status');
+    await handleNubanStatus(status, { fromPoll: true });
+  } catch (e) { /* keep trying quietly */ }
+  if (kycPollTimer && kycPollCount >= 40) {
+    stopKycPolling();
+    document.getElementById('receiveVerifyMsg').textContent = t('kyc_slow_msg');
+  }
+}
+
+async function provisionNuban() {
+  document.getElementById('nubanError').classList.remove('show');
+  setProvisionBusy(true);
+  try {
+    const status = await apiFetch('/api/kyc/status');
+    await handleNubanStatus(status);
+  } catch (err) {
+    setProvisionBusy(false);
+    showReceiveError(err.message || t('auth_error_generic'));
+  }
+}
+
+/* ---------------- KYC SHEET ---------------- */
+function openKycSheet(notice) {
+  const n = document.getElementById('kycNotice');
+  n.textContent = notice || '';
+  n.classList.toggle('show', !!notice);
+  document.getElementById('kycError').classList.remove('show');
+  document.getElementById('kycBackdrop').classList.add('open');
+  document.getElementById('kycSheet').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // The newest date a legal adult could have been born on.
+  const d = new Date(); d.setFullYear(d.getFullYear() - 18);
+  document.getElementById('kycDob').max = d.toISOString().slice(0, 10);
+}
+function closeKycSheet() {
+  document.getElementById('kycBackdrop').classList.remove('open');
+  document.getElementById('kycSheet').classList.remove('open');
+  if (!document.getElementById('receiveSheet').classList.contains('open')) document.body.style.overflow = '';
+}
+
+async function submitKyc(e) {
+  e.preventDefault();
+  const form = document.getElementById('kycForm');
+  const errEl = document.getElementById('kycError');
+  const btn = document.getElementById('kycSubmitBtn');
+  errEl.classList.remove('show');
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return false;
+  }
+
+  const data = new FormData(form);
+  data.set('consent', document.getElementById('kycConsent').checked ? '1' : '');
+  data.set('bvn', document.getElementById('kycBvn').value.replace(/\D/g, ''));
+
+  btn.disabled = true;
+  btn.textContent = t('please_wait');
+  try {
+    const status = await apiFetch('/api/kyc', { method: 'POST', body: data });
+    document.getElementById('kycNotice').classList.remove('show');
+    if (status.stage === 'verifying' || status.stage === 'active') {
+      closeKycSheet();
+      await handleNubanStatus(status);
+    } else if (status.stage === 'rejected') {
+      errEl.textContent = t('kyc_rejected_msg');
+      errEl.classList.add('show');
+    } else if (status.stage === 'error') {
+      errEl.textContent = t('kyc_error_msg');
+      errEl.classList.add('show');
+    } else {
+      errEl.textContent = t('auth_error_generic');
+      errEl.classList.add('show');
+    }
   } catch (err) {
     errEl.textContent = err.message || t('auth_error_generic');
     errEl.classList.add('show');
+  } finally {
     btn.disabled = false;
-    btn.textContent = t('get_my_nuban_btn');
+    btn.textContent = t('kyc_submit');
   }
+  return false;
 }
 
 /* ---------------- BOOT ---------------- */

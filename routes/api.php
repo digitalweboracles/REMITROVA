@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\KycController;
 use App\Http\Controllers\Api\PersistentAccountController;
 use App\Http\Controllers\Webhooks\PagaPersistentAccountWebhookController;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,8 @@ Route::post('/auth/login', [AuthController::class, 'login'])->name('auth.login')
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me'])->name('auth.me');
     Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
+    Route::post('/kyc', [KycController::class, 'store'])->middleware('throttle:6,1')->name('kyc.store');
+    Route::get('/kyc/status', [KycController::class, 'status'])->name('kyc.status');
     Route::post('/accounts/nuban', [PersistentAccountController::class, 'store'])->name('accounts.nuban.store');
     Route::get('/accounts/nuban', [PersistentAccountController::class, 'show'])->name('accounts.nuban.show');
 });

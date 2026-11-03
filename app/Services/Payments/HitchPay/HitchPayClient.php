@@ -111,6 +111,24 @@ class HitchPayClient
         return $this->post("/v1/customer/{$customerUuid}/kyc", ['type' => $type, 'value' => $value]);
     }
 
+    /** Corrects profile details while KYC is still pending/rejected (HitchPay locks them once approved). */
+    public function updateCustomer(string $customerUuid, array $fields): array
+    {
+        $url = rtrim($this->baseUrl, '/') . "/v1/customer/{$customerUuid}";
+
+        Log::info('HitchPay API request', ['url' => $url, 'method' => 'PATCH', 'fields' => array_keys($fields)]);
+
+        $response = Http::withToken($this->getAccessToken())->acceptJson()->timeout(20)->patch($url, $fields);
+
+        Log::info('HitchPay API response', ['url' => $url, 'status' => $response->status(), 'body' => $response->body()]);
+
+        if ($response->failed()) {
+            throw new RuntimeException("HitchPay API call to PATCH /v1/customer/{$customerUuid} failed with HTTP {$response->status()}: {$response->body()}");
+        }
+
+        return $response->json() ?? [];
+    }
+
     public function getCustomer(string $customerUuid): array
     {
         $url = rtrim($this->baseUrl, '/') . "/v1/customer/{$customerUuid}";

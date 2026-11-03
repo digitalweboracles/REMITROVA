@@ -3,6 +3,7 @@
 namespace App\Services\Payments\HitchPay;
 
 use App\Models\Customer;
+use App\Services\Payments\KycNotApprovedException;
 use App\Services\Payments\PersistentAccountProviderInterface;
 use App\Services\Payments\ProviderAccountResult;
 use App\Services\Payments\ProviderRequestFailedException;
@@ -44,7 +45,9 @@ class HitchPayProvider implements PersistentAccountProviderInterface
         $customerUuid = $customer->hitchpay_customer_uuid;
 
         if (!$customerUuid) {
-            [$firstName, $lastName] = $this->splitName($customer->name);
+            [$firstName, $lastName] = filled($customer->kyc_first_name)
+                ? [$customer->kyc_first_name, $customer->kyc_last_name ?: $customer->kyc_first_name]
+                : $this->splitName($customer->name);
 
             try {
                 $enrollResponse = $this->client->enrollCustomer([
@@ -119,8 +122,18 @@ class HitchPayProvider implements PersistentAccountProviderInterface
             return;
         }
 
+        // Nothing to re-send while HitchPay is working, or after a rejection
+        // (a corrected profile resets the status to pending_kyc first).
+        if ($status === 'pending') {
+            throw new KycNotApprovedException('hitchpay', "KYC_PENDING: verification is still in progress (status: 'pending').");
+        }
+
+        if ($status === 'rejected') {
+            throw new KycNotApprovedException('hitchpay', 'KYC_REJECTED: HitchPay could not verify this BVN against the details provided.', true);
+        }
+
         if (!filled($customer->bvn)) {
-            throw new ProviderRequestFailedException('hitchpay', "Customer KYC status is '{$status}' and no BVN is on file. A BVN must be collected from the customer before HitchPay will issue an account.");
+            throw new KycNotApprovedException('hitchpay', "KYC_REQUIRED: customer KYC status is '{$status}' and no BVN is on file.");
         }
 
         try {
@@ -138,8 +151,12 @@ class HitchPayProvider implements PersistentAccountProviderInterface
             throw new ProviderRequestFailedException('hitchpay', 'Could not re-read KYC status: ' . $e->getMessage());
         }
 
+        if ($status === 'rejected') {
+            throw new KycNotApprovedException('hitchpay', 'KYC_REJECTED: HitchPay could not verify this BVN against the details provided.', true);
+        }
+
         if ($status !== 'approved') {
-            throw new ProviderRequestFailedException('hitchpay', "KYC is not approved yet (status: '{$status}'). Try again shortly, or check the BVN details match.");
+            throw new KycNotApprovedException('hitchpay', "KYC_PENDING: verification is still in progress (status: '{$status}').");
         }
     }
 
